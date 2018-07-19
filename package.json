@@ -1,0 +1,67 @@
+{
+  "name": "trie-mapping",
+  "version": "1.0.0-beta.0",
+  "description": "A trie to store key-value pairs with efficient prefix-based retrievals",
+  "keywords": [
+    "dictionary",
+    "map",
+    "prefix",
+    "retrieval",
+    "search",
+    "suffix",
+    "tree",
+    "trie"
+  ],
+  "homepage": "https://github.com/rtomrud/trie-mapping#readme",
+  "bugs": {
+    "url": "https://github.com/rtomrud/trie-mapping/issues"
+  },
+  "license": "MIT",
+  "author": "Artem Rudenko <rtomrud@gmail.com>",
+  "files": [
+    "index.js"
+  ],
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rtomrud/trie-mapping.git"
+  },
+  "scripts": {
+    "lint": "eslint *.js",
+    "test": "nyc --reporter html tape -r esm index.test.js | faucet && nyc check-coverage --statements 100 --branches 100 --functions 100 --lines 100",
+    "posttest": "npm run lint"
+  },
+  "devDependencies": {
+    "eslint": "^5.1.0",
+    "eslint-config-pretty-strict": "^1.0.0-rc.10",
+    "eslint-plugin-prettier": "^2.6.2",
+    "esm": "^3.0.71",
+    "faucet": "0.0.1",
+    "husky": "^1.0.0-rc.13",
+    "nyc": "^12.0.2",
+    "prettier": "1.13.7",
+    "tape": "^4.9.1"
+  },
+  "eslintConfig": {
+    "env": {
+      "es6": true
+    },
+    "extends": [
+      "./node_modules/eslint-config-pretty-strict/index.js"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2018,
+      "sourceType": "module"
+    },
+    "root": true
+  },
+  "esm": {
+    "cjs": true,
+    "mode": "auto"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm test"
+    }
+  }
+}
