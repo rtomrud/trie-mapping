@@ -185,7 +185,7 @@ Returns a new `Iterator` object that contains an array of `[key, value]` for eac
 
 This module can be transpiled down to ES5.
 
-However, [`[@@iterator]()`](#iterator) has some caveats, since it uses ES2015's `Symbol.iterator` and not all its features can be faithfully polyfilled. If needed, the [polyfill](https://github.com/zloirock/core-js#ecmascript-symbol) covers the basic functionality of `Symbol.iterator`. Usually it is not needed because [`entries()`](#entries) provides equivalent functionality for most use cases.
+However, it relies on `Symbol.iterator` and not all Symbol features can be [faithfully polyfilled](https://github.com/zloirock/core-js#caveats-when-using-symbol-polyfill). Usually this is not a problem as `Symbol.iterator` is only used as a property name in order to construct a trie given an iterable, or to return a well-formed iterable from `[@@iterator]`, `entries()`, `keys()`, and `values()`.
 
 ## License
 
