@@ -1,7 +1,7 @@
 import test from "./node_modules/tape/index.js";
 import trieMapping from "./index.js";
 
-test("trieMapping with an invalid argument", ({ throws, end }) => {
+test("trie-mapping with an invalid argument", ({ throws, end }) => {
   throws(() => trieMapping(true), TypeError);
   throws(() => trieMapping(false), TypeError);
   throws(() => trieMapping(0), TypeError);
@@ -11,7 +11,7 @@ test("trieMapping with an invalid argument", ({ throws, end }) => {
   end();
 });
 
-test("trieMapping with no elements", ({ equal, end }) => {
+test("trie-mapping with no elements", ({ equal, end }) => {
   equal(trieMapping().size, 0);
   equal(trieMapping(null).size, 0);
   equal(trieMapping([]).size, 0);
@@ -20,7 +20,7 @@ test("trieMapping with no elements", ({ equal, end }) => {
   end();
 });
 
-test("trieMapping with an array of arrays", ({ equal, end }) => {
+test("trie-mapping with an array of arrays", ({ equal, end }) => {
   const trie = trieMapping([["hi", 0], ["hey", 1]]);
   equal(trie.has("he"), false);
   equal(trie.get("he"), undefined);
@@ -32,7 +32,7 @@ test("trieMapping with an array of arrays", ({ equal, end }) => {
   end();
 });
 
-test("trieMapping with an array of arrays with repeated keys", ({
+test("trie-mapping with an array of arrays with repeated keys", ({
   equal,
   end
 }) => {
@@ -47,7 +47,7 @@ test("trieMapping with an array of arrays with repeated keys", ({
   end();
 });
 
-test("trieMapping with an array of objects", ({ equal, end }) => {
+test("trie-mapping with an array of objects", ({ equal, end }) => {
   const trie = trieMapping([{ 0: "hi", 1: 0 }, { 0: "hey", 1: 1 }]);
   equal(trie.has("he"), false);
   equal(trie.get("he"), undefined);
@@ -59,7 +59,7 @@ test("trieMapping with an array of objects", ({ equal, end }) => {
   end();
 });
 
-test("trieMapping with an array of objects with repeated keys", ({
+test("trie-mapping with an array of objects with repeated keys", ({
   equal,
   end
 }) => {
@@ -78,7 +78,7 @@ test("trieMapping with an array of objects with repeated keys", ({
   end();
 });
 
-test("trieMapping with a native iterable", ({ equal, end }) => {
+test("trie-mapping with a native iterable", ({ equal, end }) => {
   const trie = trieMapping(new Map([["hi", 0], ["hey", 1]]));
   equal(trie.has("he"), false);
   equal(trie.get("he"), undefined);
@@ -90,7 +90,7 @@ test("trieMapping with a native iterable", ({ equal, end }) => {
   end();
 });
 
-test("trieMapping with an invalid custom iterable", ({ throws, end }) => {
+test("trie-mapping with an invalid custom iterable", ({ throws, end }) => {
   throws(
     () => trieMapping({ [Symbol.iterator]: undefined }),
     TypeError,
@@ -128,7 +128,7 @@ test("trieMapping with an invalid custom iterable", ({ throws, end }) => {
   end();
 });
 
-test("trieMapping with a valid custom iterable", ({ equal, end }) => {
+test("trie-mapping with a valid custom iterable", ({ equal, end }) => {
   const trie = trieMapping({
     [Symbol.iterator]() {
       const values = [["hi", 0], ["hey", 1]];
@@ -153,7 +153,7 @@ test("trieMapping with a valid custom iterable", ({ equal, end }) => {
   end();
 });
 
-test("trieMapping with a valid custom iterable with repeated keys", ({
+test("trie-mapping with a valid custom iterable with repeated keys", ({
   equal,
   end
 }) => {
@@ -181,7 +181,7 @@ test("trieMapping with a valid custom iterable with repeated keys", ({
   end();
 });
 
-test("trieMapping with a trie's root object", ({ equal, end }) => {
+test("trie-mapping with a trie's root object", ({ equal, end }) => {
   const trie = trieMapping({
     size: 2,
     h: {
@@ -201,7 +201,7 @@ test("trieMapping with a trie's root object", ({ equal, end }) => {
   end();
 });
 
-test("trieMapping with a trie's root object with null node", ({
+test("trie-mapping with a trie's root object with null node", ({
   equal,
   end
 }) => {
@@ -223,14 +223,14 @@ test("trieMapping with a trie's root object with null node", ({
   end();
 });
 
-test("trieMapping.root with an empty trie", ({ deepEqual, end }) => {
+test("trie-mapping root with an empty trie", ({ deepEqual, end }) => {
   deepEqual(trieMapping().root, { size: 0 });
   deepEqual(trieMapping([]).root, { size: 0 });
   deepEqual(trieMapping({}).root, { size: 0 });
   end();
 });
 
-test("trieMapping.root with a non-empty trie initialized from an array", ({
+test("trie-mapping root with a non-empty trie initialized from an array", ({
   deepEqual,
   end
 }) => {
@@ -268,7 +268,7 @@ test("trieMapping.root with a non-empty trie initialized from an array", ({
   end();
 });
 
-test("trieMapping.root with a non-empty trie initialized from a root object", ({
+test("trie-mapping root with a non-empty trie initialized from a root object", ({
   deepEqual,
   end
 }) => {
@@ -317,7 +317,7 @@ test("trieMapping.root with a non-empty trie initialized from a root object", ({
   end();
 });
 
-test("trieMapping.root with a non-empty trie initialized by calling set()", ({
+test("trie-mapping root with a non-empty trie initialized by calling set()", ({
   deepEqual,
   end
 }) => {
@@ -354,12 +354,12 @@ test("trieMapping.root with a non-empty trie initialized by calling set()", ({
   end();
 });
 
-test("trieMapping.size with an empty trie", ({ equal, end }) => {
+test("trie-mapping size with an empty trie", ({ equal, end }) => {
   equal(trieMapping().size, 0);
   end();
 });
 
-test("trieMapping.size with a non-empty trie", ({ equal, end }) => {
+test("trie-mapping size with a non-empty trie", ({ equal, end }) => {
   equal(trieMapping([["hi", 0]]).size, 1);
   equal(trieMapping([["hi"]]).size, 1);
   equal(trieMapping([["hi", 0], ["hey", 1]]).size, 2);
@@ -367,14 +367,14 @@ test("trieMapping.size with a non-empty trie", ({ equal, end }) => {
   end();
 });
 
-test("trieMapping.clear() with an empty trie", ({ equal, end }) => {
+test("trie-mapping clear() with an empty trie", ({ equal, end }) => {
   const trie = trieMapping();
   equal(trie.clear(), undefined);
   equal(trie.size, 0);
   end();
 });
 
-test("trieMapping.clear() with a non-empty trie", ({ equal, end }) => {
+test("trie-mapping clear() with a non-empty trie", ({ equal, end }) => {
   const trie = trieMapping([["hi", 1], ["hey", 0]]);
   equal(trie.clear(), undefined);
   equal(trie.size, 0);
@@ -387,7 +387,7 @@ test("trieMapping.clear() with a non-empty trie", ({ equal, end }) => {
   end();
 });
 
-test("trieMapping.clear() with a suspended iterator", ({
+test("trie-mapping clear() with a suspended iterator", ({
   equal,
   deepEqual,
   end
@@ -407,7 +407,7 @@ test("trieMapping.clear() with a suspended iterator", ({
   end();
 });
 
-test("trieMapping.delete() with a key that does not exist", ({
+test("trie-mapping delete() with a key that does not exist", ({
   equal,
   end
 }) => {
@@ -421,7 +421,7 @@ test("trieMapping.delete() with a key that does not exist", ({
   end();
 });
 
-test("trieMapping.delete() with a key that exists", ({ equal, end }) => {
+test("trie-mapping delete() with a key that exists", ({ equal, end }) => {
   equal(trieMapping([[]]).delete(), true);
   equal(trieMapping([[""]]).delete(""), true);
   equal(trieMapping([["hello"]]).delete("hello"), true);
@@ -431,7 +431,7 @@ test("trieMapping.delete() with a key that exists", ({ equal, end }) => {
   end();
 });
 
-test("trieMapping.delete() repeatedly with a key that exists", ({
+test("trie-mapping delete() repeatedly with a key that exists", ({
   equal,
   end
 }) => {
@@ -443,7 +443,7 @@ test("trieMapping.delete() repeatedly with a key that exists", ({
   end();
 });
 
-test("trieMapping.delete() keeps the trie compact", ({ deepEqual, end }) => {
+test("trie-mapping delete() keeps the trie compact", ({ deepEqual, end }) => {
   const trieWithSharedNode = trieMapping([["hi", 1], ["his", 2]]);
   trieWithSharedNode.delete("hi");
   deepEqual(
@@ -471,7 +471,7 @@ test("trieMapping.delete() keeps the trie compact", ({ deepEqual, end }) => {
   end();
 });
 
-test("trieMapping.entries() returns a well-formed iterable", ({
+test("trie-mapping entries() returns a well-formed iterable", ({
   equal,
   end
 }) => {
@@ -482,7 +482,7 @@ test("trieMapping.entries() returns a well-formed iterable", ({
   end();
 });
 
-test("trieMapping.entries() with an empty trie", ({ deepEqual, end }) => {
+test("trie-mapping entries() with an empty trie", ({ deepEqual, end }) => {
   deepEqual([...trieMapping().entries()], []);
 
   const iterator = trieMapping().entries();
@@ -494,7 +494,7 @@ test("trieMapping.entries() with an empty trie", ({ deepEqual, end }) => {
   end();
 });
 
-test("trieMapping.entries() with a non-empty trie", ({ deepEqual, end }) => {
+test("trie-mapping entries() with a non-empty trie", ({ deepEqual, end }) => {
   deepEqual(
     [
       ...trieMapping([
@@ -510,7 +510,7 @@ test("trieMapping.entries() with a non-empty trie", ({ deepEqual, end }) => {
   end();
 });
 
-test("trieMapping.forEach() with an empty trie", ({ deepEqual, end }) => {
+test("trie-mapping forEach() with an empty trie", ({ deepEqual, end }) => {
   let wasCalled = false;
   trieMapping().forEach(() => {
     wasCalled = true;
@@ -519,7 +519,7 @@ test("trieMapping.forEach() with an empty trie", ({ deepEqual, end }) => {
   end();
 });
 
-test("trieMapping.forEach() with a non-empty trie", ({ deepEqual, end }) => {
+test("trie-mapping forEach() with a non-empty trie", ({ deepEqual, end }) => {
   const trie = trieMapping([
     ["", 0],
     ["b", 4],
@@ -543,7 +543,7 @@ test("trieMapping.forEach() with a non-empty trie", ({ deepEqual, end }) => {
   end();
 });
 
-test("trieMapping.forEach() with a callbackfn that adds keys", ({
+test("trie-mapping forEach() with a callbackfn that adds keys", ({
   deepEqual,
   end
 }) => {
@@ -584,7 +584,7 @@ test("trieMapping.forEach() with a callbackfn that adds keys", ({
   end();
 });
 
-test("trieMapping.forEach() with a callbackfn that deletes keys", ({
+test("trie-mapping forEach() with a callbackfn that deletes keys", ({
   deepEqual,
   end
 }) => {
@@ -608,7 +608,7 @@ test("trieMapping.forEach() with a callbackfn that deletes keys", ({
   end();
 });
 
-test("trieMapping.forEach() with thisArg", ({ deepEqual, end }) => {
+test("trie-mapping forEach() with thisArg", ({ deepEqual, end }) => {
   const trie = trieMapping([
     ["", 0],
     ["b", 4],
@@ -639,7 +639,7 @@ test("trieMapping.forEach() with thisArg", ({ deepEqual, end }) => {
   end();
 });
 
-test("trieMapping.get() with a key that does not exist", ({ equal, end }) => {
+test("trie-mapping get() with a key that does not exist", ({ equal, end }) => {
   equal(trieMapping().get(), undefined);
   equal(trieMapping().get(""), undefined);
   equal(trieMapping().get("hello"), undefined);
@@ -653,7 +653,7 @@ test("trieMapping.get() with a key that does not exist", ({ equal, end }) => {
   end();
 });
 
-test("trieMapping.get() with a key that exists", ({ equal, end }) => {
+test("trie-mapping get() with a key that exists", ({ equal, end }) => {
   equal(trieMapping([[undefined, 0]]).get(), 0);
   equal(trieMapping([["", 0]]).get(""), 0);
   equal(trieMapping([["hello", 0]]).get("hello"), 0);
@@ -665,7 +665,7 @@ test("trieMapping.get() with a key that exists", ({ equal, end }) => {
   end();
 });
 
-test("trieMapping.getPrefixesOf() with a string with existing prefixes", ({
+test("trie-mapping getPrefixesOf() with a string with existing prefixes", ({
   deepEqual,
   end
 }) => {
@@ -678,7 +678,7 @@ test("trieMapping.getPrefixesOf() with a string with existing prefixes", ({
   end();
 });
 
-test("trieMapping.getPrefixesOf() with a string with no existing prefixes", ({
+test("trie-mapping getPrefixesOf() with a string with no existing prefixes", ({
   deepEqual,
   end
 }) => {
@@ -722,7 +722,7 @@ test("trieMapping.getPrefixesOf() with a string with no existing prefixes", ({
   end();
 });
 
-test("trieMapping.getPrefixedWith() with a prefix that does not exist", ({
+test("trie-mapping getPrefixedWith() with a prefix that does not exist", ({
   deepEqual,
   end
 }) => {
@@ -736,7 +736,7 @@ test("trieMapping.getPrefixedWith() with a prefix that does not exist", ({
   end();
 });
 
-test("trieMapping.getPrefixedWith() with a prefix that exists", ({
+test("trie-mapping getPrefixedWith() with a prefix that exists", ({
   deepEqual,
   end
 }) => {
@@ -780,7 +780,7 @@ test("trieMapping.getPrefixedWith() with a prefix that exists", ({
   end();
 });
 
-test("trieMapping.has() with a key that does not exist", ({ equal, end }) => {
+test("trie-mapping has() with a key that does not exist", ({ equal, end }) => {
   equal(trieMapping().has(), false);
   equal(trieMapping().has(""), false);
   equal(trieMapping().has("hello"), false);
@@ -791,7 +791,7 @@ test("trieMapping.has() with a key that does not exist", ({ equal, end }) => {
   end();
 });
 
-test("trieMapping.has() with a key that exists", ({ equal, end }) => {
+test("trie-mapping has() with a key that exists", ({ equal, end }) => {
   equal(trieMapping([[]]).has(), true);
   equal(trieMapping([[""]]).has(""), true);
   equal(trieMapping([["hello"]]).has("hello"), true);
@@ -801,7 +801,7 @@ test("trieMapping.has() with a key that exists", ({ equal, end }) => {
   end();
 });
 
-test("trieMapping.keys() returns a well-formed iterable", ({ equal, end }) => {
+test("trie-mapping keys() returns a well-formed iterable", ({ equal, end }) => {
   const iterator = trieMapping().keys();
   equal(typeof iterator.next, "function", "has next()");
   equal(typeof iterator[Symbol.iterator], "function", "has @@iterator");
@@ -809,7 +809,7 @@ test("trieMapping.keys() returns a well-formed iterable", ({ equal, end }) => {
   end();
 });
 
-test("trieMapping.keys() with an empty trie", ({ deepEqual, end }) => {
+test("trie-mapping keys() with an empty trie", ({ deepEqual, end }) => {
   deepEqual([...trieMapping().keys()], []);
 
   const iterator = trieMapping().keys();
@@ -821,7 +821,7 @@ test("trieMapping.keys() with an empty trie", ({ deepEqual, end }) => {
   end();
 });
 
-test("trieMapping.keys() with a non-empty trie", ({ deepEqual, end }) => {
+test("trie-mapping keys() with a non-empty trie", ({ deepEqual, end }) => {
   deepEqual(
     [
       ...trieMapping([
@@ -837,7 +837,7 @@ test("trieMapping.keys() with a non-empty trie", ({ deepEqual, end }) => {
   end();
 });
 
-test("trieMapping.set() with undefined as key", ({ equal, end }) => {
+test("trie-mapping set() with undefined as key", ({ equal, end }) => {
   const trie = trieMapping().set(undefined, 0);
   equal(trie.has(), true);
   equal(trie.get(), 0);
@@ -847,7 +847,7 @@ test("trieMapping.set() with undefined as key", ({ equal, end }) => {
   end();
 });
 
-test("trieMapping.set() with an empty key", ({ equal, end }) => {
+test("trie-mapping set() with an empty key", ({ equal, end }) => {
   const trie = trieMapping().set("", 0);
   equal(trie.has(""), true);
   equal(trie.get(""), 0);
@@ -857,7 +857,7 @@ test("trieMapping.set() with an empty key", ({ equal, end }) => {
   end();
 });
 
-test("trieMapping.set() with an empty trie", ({ equal, end }) => {
+test("trie-mapping set() with an empty trie", ({ equal, end }) => {
   const trie = trieMapping().set("hi", 0);
   equal(trie.has("hi"), true);
   equal(trie.get("hi"), 0);
@@ -867,7 +867,7 @@ test("trieMapping.set() with an empty trie", ({ equal, end }) => {
   end();
 });
 
-test("trieMapping.set() with a non-empty trie", ({ equal, end }) => {
+test("trie-mapping set() with a non-empty trie", ({ equal, end }) => {
   const trie = trieMapping([["hey", 1], ["hello", 2]]).set("hi", 0);
   equal(trie.has("hi"), true);
   equal(trie.get("hi"), 0);
@@ -877,7 +877,7 @@ test("trieMapping.set() with a non-empty trie", ({ equal, end }) => {
   end();
 });
 
-test("trieMapping.values() returns a well-formed iterable", ({
+test("trie-mapping values() returns a well-formed iterable", ({
   equal,
   end
 }) => {
@@ -888,7 +888,7 @@ test("trieMapping.values() returns a well-formed iterable", ({
   end();
 });
 
-test("trieMapping.values() with an empty trie", ({ deepEqual, end }) => {
+test("trie-mapping values() with an empty trie", ({ deepEqual, end }) => {
   deepEqual([...trieMapping().values()], []);
 
   const iterator = trieMapping().values();
@@ -900,7 +900,7 @@ test("trieMapping.values() with an empty trie", ({ deepEqual, end }) => {
   end();
 });
 
-test("trieMapping.values() with a non-empty trie", ({ deepEqual, end }) => {
+test("trie-mapping values() with a non-empty trie", ({ deepEqual, end }) => {
   deepEqual(
     [
       ...trieMapping([
@@ -916,7 +916,7 @@ test("trieMapping.values() with a non-empty trie", ({ deepEqual, end }) => {
   end();
 });
 
-test("trieMapping[@@iterator]() returns a well-formed iterable", ({
+test("trie-mapping [@@iterator]() returns a well-formed iterable", ({
   equal,
   end
 }) => {
@@ -927,7 +927,7 @@ test("trieMapping[@@iterator]() returns a well-formed iterable", ({
   end();
 });
 
-test("trieMapping[@@iterator]() with an empty trie", ({ deepEqual, end }) => {
+test("trie-mapping [@@iterator]() with an empty trie", ({ deepEqual, end }) => {
   deepEqual([...trieMapping()], []);
 
   const iterator = trieMapping()[Symbol.iterator]();
@@ -939,7 +939,7 @@ test("trieMapping[@@iterator]() with an empty trie", ({ deepEqual, end }) => {
   end();
 });
 
-test("trieMapping[@@iterator]() with a non-empty trie", ({
+test("trie-mapping [@@iterator]() with a non-empty trie", ({
   deepEqual,
   end
 }) => {
