@@ -949,3 +949,40 @@ test("trie-mapping [@@iterator]() with a non-empty trie", ({
   );
   end();
 });
+
+test("trie-mapping when there's no Symbol.iterator, e.g., IE 11", ({
+  equal,
+  deepEqual,
+  throws,
+  end
+}) => {
+  const symbol = Symbol;
+  Symbol = undefined; // eslint-disable-line no-global-assign
+  const trie = trieMapping([["hi", 0], ["hey", 1]]);
+  const keysIterator = trie.keys();
+  const entriesIterator = trie.entries();
+  const valuesIterator = trie.values();
+  Symbol = symbol; // eslint-disable-line no-global-assign
+
+  equal(trie[Symbol.iterator], undefined);
+
+  equal(keysIterator[Symbol.iterator], undefined);
+  throws(() => [...keysIterator]);
+  deepEqual(keysIterator.next(), { done: false, value: "hey" });
+  deepEqual(keysIterator.next(), { done: false, value: "hi" });
+  deepEqual(keysIterator.next(), { done: true, value: undefined });
+
+  equal(entriesIterator[Symbol.iterator], undefined);
+  throws(() => [...entriesIterator]);
+  deepEqual(entriesIterator.next(), { done: false, value: ["hey", 1] });
+  deepEqual(entriesIterator.next(), { done: false, value: ["hi", 0] });
+  deepEqual(entriesIterator.next(), { done: true, value: undefined });
+
+  equal(valuesIterator[Symbol.iterator], undefined);
+  throws(() => [...valuesIterator]);
+  deepEqual(valuesIterator.next(), { done: false, value: 1 });
+  deepEqual(valuesIterator.next(), { done: false, value: 0 });
+  deepEqual(valuesIterator.next(), { done: true, value: undefined });
+
+  end();
+});

@@ -46,11 +46,14 @@ const createIterator = (root, iteratorValueCreator, path = [[null, root]]) => {
 
       path.push(["", node]);
       return { done, value: iteratorValueCreator(path, node) };
-    },
-    [Symbol.iterator]() {
-      return iterator;
     }
   };
+  if (Symbol && Symbol.iterator) {
+    iterator[Symbol.iterator] = function() {
+      return iterator;
+    };
+  }
+
   return iterator;
 };
 
@@ -266,16 +269,17 @@ export default function(elements) {
      */
     values() {
       return createIterator(root, value);
-    },
-
+    }
+  };
+  if (Symbol && Symbol.iterator) {
     /**
      * Returns a new `Iterator` object that contains an array of `[key, value]`
      * for each element in alphabetical order.
      */
-    [Symbol.iterator]() {
+    trie[Symbol.iterator] = function() {
       return createIterator(root, entry);
-    }
-  };
+    };
+  }
 
   // Initialize from argument
   if (Array.isArray(elements)) {
@@ -283,7 +287,7 @@ export default function(elements) {
     root = { [sizeKey]: 0 };
     const { set } = trie;
     Array.prototype.forEach.call(elements, entry => set(entry[0], entry[1]));
-  } else if (elements != null && Symbol.iterator in elements) {
+  } else if (elements != null && Symbol && Symbol.iterator in elements) {
     // Initialize from iterable
     root = { [sizeKey]: 0 };
     const { set } = trie;
