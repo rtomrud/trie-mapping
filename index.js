@@ -80,7 +80,6 @@ const getNode = (root, key) => {
  * trie's root object. If initialized from a trie's root object, the argument
  * may be deeply mutated by the trie's methods.
  */
-// eslint-disable-next-line max-lines-per-function
 export default function(elements) {
   if (typeof elements !== "undefined" && typeof elements !== "object") {
     throw TypeError();
