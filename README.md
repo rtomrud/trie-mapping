@@ -5,9 +5,9 @@
 
 A [trie](https://en.wikipedia.org/wiki/Trie) to store key-value pairs with efficient prefix-based retrievals
 
-- Mimics API of [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) very closely, but with iteration in alphabetical order instead of in insertion order
-- Methods [`getPrefixesOf()`](#getprefixesofstring) and [`getPrefixedWith()`](#getprefixedwithprefix), which allow efficient prefix-based retrievals
-- A [`root`](#root) getter that returns the trie's root, which allows efficient serialization and deserialization
+- Mimics API of [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map), but with iteration in alphabetical order instead of in insertion order
+- Methods [`getPrefixesOf()`](#getprefixesofstring) and [`getPrefixedWith()`](#getprefixedwithprefix), for efficient prefix-based retrievals
+- A [`root`](#root) getter that returns the trie's root, for efficient serialization and deserialization
 - Fast, lightweight (1 KB minified and gzipped), no dependencies, and [ES5 compatible](#ecmascript-compatibility)
 
 ## Installing
