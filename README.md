@@ -18,14 +18,14 @@ npm install trie-mapping
 
 ## API
 
-The API mimics that of the native `Map`, with the following differences:
+The API mimics that of the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map), with the following differences:
 
 - The `key` argument of [`get()`](#getkey), [`delete()`](#deletekey), [`has()`](#haskey), and [`set()`](#setkey-value) must be a string
 - The traversal order of [`entries()`](#entries), [`forEach()`](#foreachcallbackfn-thisarg), [`keys()`](#keys), [`values()`](#values), and [`[@@iterator]()`](#iterator) is alphabetical
 - It has the methods [`getPrefixesOf()`](#getprefixesofstring) and [`getPrefixedWith()`](#getprefixedwithprefix), for efficient prefix-based retrievals
 - It exports a [factory function](#triemapelements), which can be initialized from any iterable or a trie's [`root`](#root) object
 
-[`size`](#size) and [`clear()`](#clear) are identical to those of the native `Map`.
+[`size`](#size) and [`clear()`](#clear) are identical to those of the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map).
 
 ### `trieMapping(elements)`
 
