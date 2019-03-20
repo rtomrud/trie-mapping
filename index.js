@@ -75,10 +75,10 @@ const getNode = (root, key) => {
 };
 
 /**
- * Returns a trie object. Can be initialized from the given `elements`, which
- * is an array or other iterable whose elements are key-value pairs, or a
- * trie's root object. If initialized from a trie's root object, the argument
- * may be deeply mutated by the trie's methods.
+ * Returns a trie object, which is iterable. Can be initialized from the given
+ * `elements`, which is an array or other iterable whose elements are
+ * key-value pairs, or a trie's root object. If initialized from a trie's root
+ * object, the argument may be deeply mutated by the trie's methods.
  */
 export default function(elements) {
   if (typeof elements !== "undefined" && typeof elements !== "object") {

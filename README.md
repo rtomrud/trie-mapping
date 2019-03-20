@@ -29,7 +29,7 @@ The API mimics that of the native `Map`, with the following differences:
 
 ### `trieMapping(elements)`
 
-Returns a trie object. Can be initialized from the given `elements`, which is an array or other iterable whose elements are key-value pairs, or a trie's root object. If initialized from a trie's root object, the argument may be deeply mutated by the trie's methods.
+Returns a trie object, which is [iterable]. Can be initialized from the given `elements`, which is an array or other iterable whose elements are key-value pairs, or a trie's root object. If initialized from a trie's root object, the argument may be deeply mutated by the trie's methods.
 
 ```js
 import trieMapping from "trie-mapping";
@@ -193,4 +193,5 @@ It can be transpiled to ES5 without the need for polyfills, since it does not re
 
 [MIT](./LICENSE)
 
+[iterable]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators#Iterables
 [`Iterator`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators#Iterators
