@@ -29,7 +29,7 @@ The API mimics that of the native `Map`, with the following differences:
 
 ### `trieMapping(elements)`
 
-Returns a trie object, which is [iterable]. Can be initialized from the given `elements`, which is an array or other iterable whose elements are key-value pairs, or a trie's root object. If initialized from a trie's root object, the argument may be deeply mutated by the trie's methods.
+Returns a trie object, which is [iterable]. It can be initialized from the given `elements`, which is an array or other iterable whose elements are key-value pairs, or a trie's root object. If initialized from a trie's root object, the argument may be deeply mutated by the trie's methods.
 
 ```js
 import trieMapping from "trie-mapping";
