@@ -185,32 +185,9 @@ Returns a new `Iterator` object that contains an array of `[key, value]` for eac
 
 ## ECMAScript compatibility
 
-This module is ES5 compatible without the need for polyfills.
+This module supports every mantained version of Node, every modern browser, and IE 11 (requires transpilation).
 
-It supports every mantained version of Node, every modern browser, and IE 11.
-
-### Caveats
-
-If ES6's `Symbol.iterator` is not available in the environment and is not polyfilled, features that depend on it will not work.
-
-For example, spreading an iterable would throw in IE 11:
-
-```js
-import trieMapping from "trie-mapping";
-
-// Throws if Symbol.iterator is missing
-const entries = [...trieMapping([["a", 1], ["b", 2]]).entries()];
-```
-
-Yet the iterator is provided, so it can be used directly by calling `next()` on it:
-
-```js
-import trieMapping from "trie-mapping";
-
-trieMapping([["a", 1], ["b", 2]]).entries().next();
-// =>
-{ done: false, value: ["a", 1] }
-```
+It can be transpiled to ES5 without the need for polyfills, since it does not rely on `Symbol.iterator`. For example, when transpiling with [Babel](https://babeljs.io/docs/en/caveats), you do not need to include the `Symbol` and `prototype[Symbol.iterator]` polyfills.
 
 ## License
 
