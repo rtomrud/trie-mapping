@@ -187,7 +187,7 @@ Returns a new [`Iterator`] object that contains an array of `[key, value]` for e
 
 This module supports every mantained version of Node, every modern browser, and IE 11 (requires transpilation).
 
-It can be transpiled to ES5 without the need for polyfills, since it does not rely on `Symbol.iterator`. For example, when transpiling with [Babel](https://babeljs.io/docs/en/caveats), you do not need to include the `Symbol` and `prototype[Symbol.iterator]` polyfills.
+It can be transpiled to ES5 without the need for polyfills, since it does not rely on [`Symbol.iterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/iterator). For example, when transpiling with [Babel](https://babeljs.io/docs/en/caveats), you do not need to include the `Symbol` and `prototype[Symbol.iterator]` polyfills.
 
 ## License
 
