@@ -115,7 +115,7 @@ Returns `true` if an element with the given `key` existed and has been removed, 
 
 ### `entries()`
 
-Returns a new `Iterator` object that contains an array of `[key, value]` for each element in alphabetical order.
+Returns a new [`Iterator`] object that contains an array of `[key, value]` for each element in alphabetical order.
 
 ### `forEach(callbackfn, thisArg)`
 
@@ -169,7 +169,7 @@ Returns `true` if a value has been associated to the given `key`, or `false` oth
 
 ### `keys()`
 
-Returns a new `Iterator` object that contains the keys for each element in alphabetical order.
+Returns a new [`Iterator`] object that contains the keys for each element in alphabetical order.
 
 ### `set(key, value)`
 
@@ -177,11 +177,11 @@ Returns the trie, associating the given `value` to the given `key`.
 
 ### `values()`
 
-Returns a new `Iterator` object that contains the values for each element in alphabetical order.
+Returns a new [`Iterator`] object that contains the values for each element in alphabetical order.
 
 ### `[@@iterator]()`
 
-Returns a new `Iterator` object that contains an array of `[key, value]` for each element in alphabetical order.
+Returns a new [`Iterator`] object that contains an array of `[key, value]` for each element in alphabetical order.
 
 ## ECMAScript compatibility
 
@@ -192,3 +192,5 @@ It can be transpiled to ES5 without the need for polyfills, since it does not re
 ## License
 
 [MIT](./LICENSE)
+
+[`Iterator`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators#Iterators
