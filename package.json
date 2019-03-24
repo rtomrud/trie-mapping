@@ -28,12 +28,18 @@
     "url": "https://github.com/rtomrud/trie-mapping.git"
   },
   "scripts": {
+    "prebench": "npm run build -s",
+    "bench": "npm run bench-payload -s && npm run bench-space -s && npm run bench-time -s",
+    "bench-payload": "node bench/payload/map.js && node bench/payload/trie.js",
+    "bench-space": "node --expose-gc bench/space/map.js && node --expose-gc bench/space/trie.js",
+    "bench-time": "node bench/time/bench.js",
     "build": "rollup -i index.js -o dist/index.js -f cjs",
-    "lint": "eslint '*.js'",
+    "lint": "eslint '**/*.js'",
     "prepare": "npm run build",
     "test": "nyc --reporter html tape -r esm index.test.js | faucet && nyc check-coverage --statements 100 --branches 100 --functions 100 --lines 100"
   },
   "devDependencies": {
+    "benchmark": "2.1.4",
     "eslint": "5.15.3",
     "eslint-config-pretty-strict": "1.0.0-rc.16",
     "eslint-plugin-prettier": "3.0.1",
