@@ -184,28 +184,6 @@ export default function(elements) {
 
     /**
      * Returns an array that contains an array of `[key, value]` for each key
-     * that is a prefix of the given `string`, in alphabetical order.
-     */
-    getPrefixesOf(string = "") {
-      const characters = String(string);
-      const { length } = characters;
-      const prefixes = [];
-      let node = root;
-      let index = 0;
-      while (node != null && index <= length) {
-        if (hasOwnProperty.call(node, valueKey)) {
-          prefixes.push([characters.slice(0, index), node[valueKey]]);
-        }
-
-        node = node[characters.charAt(index)];
-        index += 1;
-      }
-
-      return prefixes;
-    },
-
-    /**
-     * Returns an array that contains an array of `[key, value]` for each key
      * prefixed with the given `prefix`, in alphabetical order.
      */
     getPrefixedWith(prefix = "") {
@@ -224,6 +202,28 @@ export default function(elements) {
       }
 
       return prefixedWith;
+    },
+
+    /**
+     * Returns an array that contains an array of `[key, value]` for each key
+     * that is a prefix of the given `string`, in alphabetical order.
+     */
+    getPrefixesOf(string = "") {
+      const characters = String(string);
+      const { length } = characters;
+      const prefixes = [];
+      let node = root;
+      let index = 0;
+      while (node != null && index <= length) {
+        if (hasOwnProperty.call(node, valueKey)) {
+          prefixes.push([characters.slice(0, index), node[valueKey]]);
+        }
+
+        node = node[characters.charAt(index)];
+        index += 1;
+      }
+
+      return prefixes;
     },
 
     /**

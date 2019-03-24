@@ -667,64 +667,6 @@ test("trie-mapping get() with a key that exists", ({ equal, end }) => {
   end();
 });
 
-test("trie-mapping getPrefixesOf() with a string with existing prefixes", ({
-  deepEqual,
-  end
-}) => {
-  deepEqual(trieMapping().getPrefixesOf(), []);
-  deepEqual(trieMapping().getPrefixesOf(""), []);
-  deepEqual(trieMapping().getPrefixesOf("hello"), []);
-  deepEqual(trieMapping([["hey", 0]]).getPrefixesOf("hello"), []);
-  deepEqual(trieMapping([["hello", 0]]).getPrefixesOf("hells"), []);
-  deepEqual(trieMapping([["hello", 0]]).getPrefixesOf("hell"), []);
-  end();
-});
-
-test("trie-mapping getPrefixesOf() with a string with no existing prefixes", ({
-  deepEqual,
-  end
-}) => {
-  deepEqual(trieMapping([["", 0]]).getPrefixesOf(), [["", 0]]);
-  deepEqual(trieMapping([["", 0]]).getPrefixesOf(""), [["", 0]]);
-  deepEqual(trieMapping([["hello", 0]]).getPrefixesOf("hello"), [["hello", 0]]);
-  deepEqual(trieMapping([["hello", 1], ["hey", 1]]).getPrefixesOf("hello"), [
-    ["hello", 1]
-  ]);
-  deepEqual(
-    trieMapping([["hey man", 0], ["hey", 1]]).getPrefixesOf("hey man"),
-    [["hey", 1], ["hey man", 0]]
-  );
-  deepEqual(
-    trieMapping([["hello"], ["hells"], ["hell"]]).getPrefixesOf("hello"),
-    [["hell", undefined], ["hello", undefined]]
-  );
-  deepEqual(
-    trieMapping([["", 0], ["hey man", 2], ["hey", 1]]).getPrefixesOf("hey man"),
-    [["", 0], ["hey", 1], ["hey man", 2]]
-  );
-  deepEqual(
-    trieMapping([
-      ["hello Newman", 2],
-      ["hello", 0],
-      ["hello New", 1]
-    ]).getPrefixesOf("hello Newman"),
-    [["hello", 0], ["hello New", 1], ["hello Newman", 2]]
-  );
-  deepEqual(
-    trieMapping([
-      ["he", 1],
-      ["hey", 5],
-      ["hells", 4],
-      ["hello", 3],
-      ["hell", 2],
-      ["bye", 0]
-    ]).getPrefixesOf("hello"),
-    [["he", 1], ["hell", 2], ["hello", 3]]
-  );
-  deepEqual(trieMapping([[1, 0]]).getPrefixesOf(1), [["1", 0]]);
-  end();
-});
-
 test("trie-mapping getPrefixedWith() with a prefix that does not exist", ({
   deepEqual,
   end
@@ -781,6 +723,64 @@ test("trie-mapping getPrefixedWith() with a prefix that exists", ({
     [["hell", 2], ["hello", 3], ["hells", 4]]
   );
   deepEqual(trieMapping([[1, 0]]).getPrefixedWith(), [["1", 0]]);
+  end();
+});
+
+test("trie-mapping getPrefixesOf() with a string with no existing prefixes", ({
+  deepEqual,
+  end
+}) => {
+  deepEqual(trieMapping().getPrefixesOf(), []);
+  deepEqual(trieMapping().getPrefixesOf(""), []);
+  deepEqual(trieMapping().getPrefixesOf("hello"), []);
+  deepEqual(trieMapping([["hey", 0]]).getPrefixesOf("hello"), []);
+  deepEqual(trieMapping([["hello", 0]]).getPrefixesOf("hells"), []);
+  deepEqual(trieMapping([["hello", 0]]).getPrefixesOf("hell"), []);
+  end();
+});
+
+test("trie-mapping getPrefixesOf() with a string with existing prefixes", ({
+  deepEqual,
+  end
+}) => {
+  deepEqual(trieMapping([["", 0]]).getPrefixesOf(), [["", 0]]);
+  deepEqual(trieMapping([["", 0]]).getPrefixesOf(""), [["", 0]]);
+  deepEqual(trieMapping([["hello", 0]]).getPrefixesOf("hello"), [["hello", 0]]);
+  deepEqual(trieMapping([["hello", 1], ["hey", 1]]).getPrefixesOf("hello"), [
+    ["hello", 1]
+  ]);
+  deepEqual(
+    trieMapping([["hey man", 0], ["hey", 1]]).getPrefixesOf("hey man"),
+    [["hey", 1], ["hey man", 0]]
+  );
+  deepEqual(
+    trieMapping([["hello"], ["hells"], ["hell"]]).getPrefixesOf("hello"),
+    [["hell", undefined], ["hello", undefined]]
+  );
+  deepEqual(
+    trieMapping([["", 0], ["hey man", 2], ["hey", 1]]).getPrefixesOf("hey man"),
+    [["", 0], ["hey", 1], ["hey man", 2]]
+  );
+  deepEqual(
+    trieMapping([
+      ["hello Newman", 2],
+      ["hello", 0],
+      ["hello New", 1]
+    ]).getPrefixesOf("hello Newman"),
+    [["hello", 0], ["hello New", 1], ["hello Newman", 2]]
+  );
+  deepEqual(
+    trieMapping([
+      ["he", 1],
+      ["hey", 5],
+      ["hells", 4],
+      ["hello", 3],
+      ["hell", 2],
+      ["bye", 0]
+    ]).getPrefixesOf("hello"),
+    [["he", 1], ["hell", 2], ["hello", 3]]
+  );
+  deepEqual(trieMapping([[1, 0]]).getPrefixesOf(1), [["1", 0]]);
   end();
 });
 

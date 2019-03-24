@@ -6,7 +6,7 @@
 A [trie](https://en.wikipedia.org/wiki/Trie) to store key-value pairs with efficient prefix-based retrievals
 
 - Mimics API of [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map), but with iteration in alphabetical order instead of in insertion order
-- Methods [`getPrefixesOf()`](#getprefixesofstring) and [`getPrefixedWith()`](#getprefixedwithprefix), for efficient prefix-based retrievals
+- Methods [`getPrefixedWith()`](#getprefixedwithprefix) and [`getPrefixesOf()`](#getprefixesofstring), for efficient prefix-based retrievals
 - A [`root`](#root) getter that returns the trie's root, for efficient serialization and deserialization
 - Fast, lightweight (1 KB minified and gzipped), no dependencies, and [ES5 compatible](#ecmascript-compatibility)
 
@@ -22,7 +22,7 @@ The API mimics that of the native [`Map`](https://developer.mozilla.org/en-US/do
 
 - The `key` argument of [`get()`](#getkey), [`delete()`](#deletekey), [`has()`](#haskey), and [`set()`](#setkey-value) must be a string
 - The traversal order of [`entries()`](#entries), [`forEach()`](#foreachcallbackfn-thisarg), [`keys()`](#keys), [`values()`](#values), and [`[@@iterator]()`](#iterator) is alphabetical
-- It has the methods [`getPrefixesOf()`](#getprefixesofstring) and [`getPrefixedWith()`](#getprefixedwithprefix), for efficient prefix-based retrievals
+- It has the methods [`getPrefixedWith()`](#getprefixedwithprefix) and [`getPrefixesOf()`](#getprefixesofstring)
 - It exports a [factory function](#triemapelements), which can be initialized from any iterable or a trie's [`root`](#root) object
 
 [`size`](#size) and [`clear()`](#clear) are identical to those of the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map).
@@ -125,25 +125,6 @@ Calls the given `callbackfn` once for each key-value pair, in alphabetical order
 
 Returns the value associated to the given `key`, or `undefined` if there is none.
 
-### `getPrefixesOf(string)`
-
-Returns an array that contains an array of `[key, value]` for each key that is a prefix of the given `string`, in alphabetical order.
-
-```js
-import trieMapping from "trie-mapping";
-
- trieMapping([
-  ["he", 1],
-  ["hey", 5],
-  ["hells", 4],
-  ["hello", 3],
-  ["hell", 2],
-  ["bye", 0]
-]).getPrefixesOf("hello");
-// =>
-[["he", 1], ["hell", 2], ["hello", 3]]
-```
-
 ### `getPrefixedWith(prefix)`
 
 Returns an array that contains an array of `[key, value]` for each key prefixed with the given `prefix`, in alphabetical order.
@@ -161,6 +142,25 @@ trieMapping([
 ]).getPrefixedWith("hell");
 // =>
 [["hell", 2], ["hello", 3], ["hells", 4]]
+```
+
+### `getPrefixesOf(string)`
+
+Returns an array that contains an array of `[key, value]` for each key that is a prefix of the given `string`, in alphabetical order.
+
+```js
+import trieMapping from "trie-mapping";
+
+ trieMapping([
+  ["he", 1],
+  ["hey", 5],
+  ["hells", 4],
+  ["hello", 3],
+  ["hell", 2],
+  ["bye", 0]
+]).getPrefixesOf("hello");
+// =>
+[["he", 1], ["hell", 2], ["hello", 3]]
 ```
 
 ### `has(key)`
