@@ -428,6 +428,7 @@ test("trie-mapping delete() with a key that exists", ({ equal, end }) => {
   equal(trieMapping([["hello"], ["hi"]]).delete("hello"), true);
   equal(trieMapping([["hello man"], ["hello"], ["he"]]).delete("hello"), true);
   equal(trieMapping([["hello man"], ["hello"], ["he"]]).delete("hello"), true);
+  equal(trieMapping([[1]]).delete(1), true);
   end();
 });
 
@@ -662,6 +663,7 @@ test("trie-mapping get() with a key that exists", ({ equal, end }) => {
   equal(trieMapping([["hello", 1], ["hell", 0]]).get("hello"), 1);
   equal(trieMapping([["hello", 1], ["hells", 0]]).get("hells"), 0);
   equal(trieMapping([["hello", 0], ["hello man", 1]]).get("hello"), 0);
+  equal(trieMapping([[1, 0], [2, 1]]).get(1), 0);
   end();
 });
 
@@ -719,6 +721,7 @@ test("trie-mapping getPrefixesOf() with a string with no existing prefixes", ({
     ]).getPrefixesOf("hello"),
     [["he", 1], ["hell", 2], ["hello", 3]]
   );
+  deepEqual(trieMapping([[1, 0]]).getPrefixesOf(1), [["1", 0]]);
   end();
 });
 
@@ -777,6 +780,7 @@ test("trie-mapping getPrefixedWith() with a prefix that exists", ({
     ]).getPrefixedWith("hell"),
     [["hell", 2], ["hello", 3], ["hells", 4]]
   );
+  deepEqual(trieMapping([[1, 0]]).getPrefixedWith(), [["1", 0]]);
   end();
 });
 
@@ -798,6 +802,7 @@ test("trie-mapping has() with a key that exists", ({ equal, end }) => {
   equal(trieMapping([["hello"], ["hey"]]).has("hello"), true);
   equal(trieMapping([["hello man"], ["hello"]]).has("hello"), true);
   equal(trieMapping([["hello man"], ["hello"], ["man!"]]).has("hello"), true);
+  equal(trieMapping([[1]]).has(1), true);
   end();
 });
 
@@ -874,6 +879,12 @@ test("trie-mapping set() with a non-empty trie", ({ equal, end }) => {
   equal(trie.size, 3);
   equal(trie.set("hi").size, 3);
   equal(trie.delete("hi"), true);
+  end();
+});
+
+test("trie-mapping set() with a non-string key", ({ equal, end }) => {
+  const trie = trieMapping().set(1, 0);
+  equal(trie.get(1), 0);
   end();
 });
 

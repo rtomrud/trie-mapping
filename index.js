@@ -115,19 +115,20 @@ export default function(elements) {
      * removed, or `false` if the element does not exist.
      */
     delete(key = "") {
-      const { length } = key;
+      const characters = String(key);
+      const { length } = characters;
       let node = root;
       let ancestor = root;
-      let ancestorChar = key.charAt(0);
+      let ancestorCharacter = characters.charAt(0);
       let index = 0;
       while (node != null && index < length) {
-        const currentChar = key.charAt(index);
+        const currentCharacter = characters.charAt(index);
         if (keys(node).length > 1) {
           ancestor = node;
-          ancestorChar = currentChar;
+          ancestorCharacter = currentCharacter;
         }
 
-        node = node[currentChar];
+        node = node[currentCharacter];
         index += 1;
       }
 
@@ -137,7 +138,7 @@ export default function(elements) {
 
       root[sizeKey] -= 1;
       if (keys(node).length <= 1) {
-        return delete ancestor[ancestorChar];
+        return delete ancestor[ancestorCharacter];
       }
 
       return delete node[valueKey];
@@ -172,7 +173,7 @@ export default function(elements) {
      * is none.
      */
     get(key = "") {
-      const node = getNode(root, key);
+      const node = getNode(root, String(key));
       return node == null ? undefined : node[valueKey];
     },
 
@@ -181,16 +182,17 @@ export default function(elements) {
      * that is a prefix of the given `string`, in alphabetical order.
      */
     getPrefixesOf(string = "") {
-      const { length } = string;
+      const characters = String(string);
+      const { length } = characters;
       const prefixes = [];
       let node = root;
       let index = 0;
       while (node != null && index <= length) {
         if (hasOwnProperty.call(node, valueKey)) {
-          prefixes.push([string.slice(0, index), node[valueKey]]);
+          prefixes.push([characters.slice(0, index), node[valueKey]]);
         }
 
-        node = node[string.charAt(index)];
+        node = node[characters.charAt(index)];
         index += 1;
       }
 
@@ -202,7 +204,8 @@ export default function(elements) {
      * prefixed with the given `prefix`, in alphabetical order.
      */
     getPrefixedWith(prefix = "") {
-      const node = getNode(root, prefix);
+      const characters = String(prefix);
+      const node = getNode(root, characters);
       if (node == null) {
         return [];
       }
@@ -211,7 +214,7 @@ export default function(elements) {
       const { next } = createIterator(root, entry, [[null, node]]);
       let { done, value: [suffix, value] = [] } = next();
       while (!done) {
-        prefixedWith.push([prefix + suffix, value]);
+        prefixedWith.push([characters + suffix, value]);
         ({ done, value: [suffix, value] = [] } = next());
       }
 
@@ -223,7 +226,7 @@ export default function(elements) {
      * `false` otherwise.
      */
     has(key = "") {
-      const node = getNode(root, key);
+      const node = getNode(root, String(key));
       return node != null && hasOwnProperty.call(node, valueKey);
     },
 
@@ -239,15 +242,16 @@ export default function(elements) {
      * Returns the trie, associating the given `value` to the given `key`.
      */
     set(key = "", value) {
-      const { length } = key;
+      const characters = String(key);
+      const { length } = characters;
       let node = root;
       let parent = node;
       let index = 0;
       while (index < length) {
-        node = node[key.charAt(index)];
+        node = node[characters.charAt(index)];
         if (node == null) {
           node = {};
-          parent[key.charAt(index)] = node;
+          parent[characters.charAt(index)] = node;
         }
 
         parent = node;
