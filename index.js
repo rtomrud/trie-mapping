@@ -1,10 +1,10 @@
 const valueKey = "";
 const sizeKey = "size";
-
 const { hasOwnProperty } = Object.prototype;
 const { keys } = Object;
 
-const createIterator = (root, iteratorValueCreator, path = [[null, root]]) => {
+const createIterator = (root, createIteratorValue) => {
+  const path = [];
   let done = false;
   const iterator = {
     next() {
@@ -12,16 +12,14 @@ const createIterator = (root, iteratorValueCreator, path = [[null, root]]) => {
         return { done, value: undefined };
       }
 
-      let [lastCharacter, node] = path.pop();
-      if (lastCharacter == null) {
-        if (hasOwnProperty.call(node, valueKey)) {
-          path.push(["", node]);
-          return { done, value: iteratorValueCreator(path, node) };
+      if (path.length === 0) {
+        path.push(["", root]);
+        if (hasOwnProperty.call(root, valueKey)) {
+          return { done, value: createIteratorValue(path) };
         }
-
-        lastCharacter = "";
       }
 
+      let [lastCharacter, node] = path.pop();
       let nextCharacter = (nextCharacter, key) =>
         key > lastCharacter &&
         (key < nextCharacter || nextCharacter === lastCharacter) &&
@@ -39,10 +37,10 @@ const createIterator = (root, iteratorValueCreator, path = [[null, root]]) => {
         character = keys(node).reduce(nextCharacter, lastCharacter);
       }
 
-      nextCharacter = (nextCharacter, key) =>
-        key < nextCharacter && key.length === 1 ? key : nextCharacter;
       path.push([character, node]);
       node = node[character];
+      nextCharacter = (nextCharacter, key) =>
+        key < nextCharacter && key.length === 1 ? key : nextCharacter;
       while (!hasOwnProperty.call(node, valueKey)) {
         character = keys(node).reduce(nextCharacter);
         path.push([character, node]);
@@ -50,7 +48,7 @@ const createIterator = (root, iteratorValueCreator, path = [[null, root]]) => {
       }
 
       path.push(["", node]);
-      return { done, value: iteratorValueCreator(path, node) };
+      return { done, value: createIteratorValue(path) };
     }
   };
   if (Symbol && Symbol.iterator) {
@@ -64,8 +62,8 @@ const createIterator = (root, iteratorValueCreator, path = [[null, root]]) => {
 
 // Iterator value creators
 const key = path => path.reduce((key, [character]) => key + character, "");
-const value = (path, node) => node[valueKey];
-const entry = (path, node) => [key(path), value(path, node)];
+const value = path => path[path.length - 1][1][valueKey];
+const entry = path => [key(path), value(path)];
 
 const getNode = (root, key) => {
   const { length } = key;
@@ -194,7 +192,7 @@ export default function(elements) {
       }
 
       const prefixedWith = [];
-      const { next } = createIterator(root, entry, [[null, node]]);
+      const { next } = createIterator(node, entry);
       let { done, value: [suffix, value] = [] } = next();
       while (!done) {
         prefixedWith.push([characters + suffix, value]);
