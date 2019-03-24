@@ -4,8 +4,6 @@ const sizeKey = "size";
 const { hasOwnProperty } = Object.prototype;
 const { keys } = Object;
 
-const sortedKeys = object => keys(object).sort();
-
 const createIterator = (root, iteratorValueCreator, path = [[null, root]]) => {
   let done = false;
   const iterator = {
@@ -24,24 +22,31 @@ const createIterator = (root, iteratorValueCreator, path = [[null, root]]) => {
         lastCharacter = "";
       }
 
-      const isNextCharacter = key => lastCharacter < key && key.length === 1;
-      let character = sortedKeys(node).find(isNextCharacter);
-      while (character == null) {
+      let nextCharacter = (nextCharacter, key) =>
+        key > lastCharacter &&
+        (key < nextCharacter || nextCharacter === lastCharacter) &&
+        key.length === 1
+          ? key
+          : nextCharacter;
+      let character = keys(node).reduce(nextCharacter, lastCharacter);
+      while (character === lastCharacter) {
         if (path.length === 0) {
           done = true;
           return { done, value: undefined };
         }
 
         [lastCharacter, node] = path.pop();
-        character = sortedKeys(node).find(isNextCharacter);
+        character = keys(node).reduce(nextCharacter, lastCharacter);
       }
 
-      let foundValue = false;
-      while (character != null && !foundValue) {
+      nextCharacter = (nextCharacter, key) =>
+        key < nextCharacter && key.length === 1 ? key : nextCharacter;
+      path.push([character, node]);
+      node = node[character];
+      while (!hasOwnProperty.call(node, valueKey)) {
+        character = keys(node).reduce(nextCharacter);
         path.push([character, node]);
         node = node[character];
-        character = sortedKeys(node).find(key => key.length === 1);
-        foundValue = hasOwnProperty.call(node, valueKey);
       }
 
       path.push(["", node]);
