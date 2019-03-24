@@ -500,13 +500,13 @@ test("trie-mapping entries() with a non-empty trie", ({ deepEqual, end }) => {
     [
       ...trieMapping([
         ["", 0],
-        ["b", 4],
         ["a", 1],
-        ["aac", 3],
-        ["aab", 2]
+        ["aac", 4],
+        ["aaa", 2],
+        ["aab", 3]
       ]).entries()
     ],
-    [["", 0], ["a", 1], ["aab", 2], ["aac", 3], ["b", 4]]
+    [["", 0], ["a", 1], ["aaa", 2], ["aab", 3], ["aac", 4]]
   );
   end();
 });
@@ -523,10 +523,10 @@ test("trie-mapping forEach() with an empty trie", ({ deepEqual, end }) => {
 test("trie-mapping forEach() with a non-empty trie", ({ deepEqual, end }) => {
   const trie = trieMapping([
     ["", 0],
-    ["b", 4],
     ["a", 1],
-    ["aac", 3],
-    ["aab", 2]
+    ["aac", 4],
+    ["aaa", 2],
+    ["aab", 3]
   ]);
   const callbackArgs = [];
   trie.forEach((...args) => callbackArgs.push([...args]));
@@ -535,9 +535,9 @@ test("trie-mapping forEach() with a non-empty trie", ({ deepEqual, end }) => {
     [
       [0, "", trie],
       [1, "a", trie],
-      [2, "aab", trie],
-      [3, "aac", trie],
-      [4, "b", trie]
+      [2, "aaa", trie],
+      [3, "aab", trie],
+      [4, "aac", trie]
     ],
     "callbackfn is called with the value, key and trie as arguments"
   );
@@ -550,10 +550,10 @@ test("trie-mapping forEach() with a callbackfn that adds keys", ({
 }) => {
   const trie = trieMapping([
     ["", 0],
-    ["b", 4],
     ["a", 1],
-    ["aac", 3],
-    ["aab", 2]
+    ["aac", 4],
+    ["aab", 3],
+    ["aaa", 2]
   ]);
   const callbackArgs = [];
   trie.forEach((value, key, trie) => {
@@ -563,7 +563,7 @@ test("trie-mapping forEach() with a callbackfn that adds keys", ({
       trie.set(`${key}N`, value + 1);
     }
 
-    if (key === "b") {
+    if (key === "aac") {
       // Should not be visited because it is lower alphabetically
       trie.set(`a`, value - 1);
     }
@@ -575,10 +575,10 @@ test("trie-mapping forEach() with a callbackfn that adds keys", ({
       [1, "a"],
       [2, "aN"],
       [3, "aNN"],
-      [2, "aab"],
-      [3, "aabN"],
-      [3, "aac"],
-      [4, "b"]
+      [2, "aaa"],
+      [3, "aaaN"],
+      [3, "aab"],
+      [4, "aac"]
     ],
     "added keys are visited if they are alphabetically after the current key"
   );
@@ -591,19 +591,19 @@ test("trie-mapping forEach() with a callbackfn that deletes keys", ({
 }) => {
   const trie = trieMapping([
     ["", 0],
-    ["b", 4],
     ["a", 1],
-    ["aac", 3],
-    ["aab", 2]
+    ["aac", 4],
+    ["aaa", 2],
+    ["aab", 3]
   ]);
   const callbackArgs = [];
   trie.forEach((value, key, trie) => {
     callbackArgs.push([value, key]);
-    trie.delete("b");
+    trie.delete("aab");
   });
   deepEqual(
     callbackArgs,
-    [[0, ""], [1, "a"], [2, "aab"], [3, "aac"]],
+    [[0, ""], [1, "a"], [2, "aaa"], [4, "aac"]],
     "keys deleted after forEach begins and before being visited are not visited"
   );
   end();
@@ -612,10 +612,10 @@ test("trie-mapping forEach() with a callbackfn that deletes keys", ({
 test("trie-mapping forEach() with thisArg", ({ deepEqual, end }) => {
   const trie = trieMapping([
     ["", 0],
-    ["b", 4],
     ["a", 1],
-    ["aac", 3],
-    ["aab", 2]
+    ["aac", 4],
+    ["aaa", 2],
+    ["aab", 3]
   ]);
   const store = {
     items: [],
@@ -631,9 +631,9 @@ test("trie-mapping forEach() with thisArg", ({ deepEqual, end }) => {
     [
       [0, "", trie],
       [1, "a", trie],
-      [2, "aab", trie],
-      [3, "aac", trie],
-      [4, "b", trie]
+      [2, "aaa", trie],
+      [3, "aab", trie],
+      [4, "aac", trie]
     ],
     "callbackfn is bound to thisArg"
   );
@@ -831,13 +831,13 @@ test("trie-mapping keys() with a non-empty trie", ({ deepEqual, end }) => {
     [
       ...trieMapping([
         ["", 0],
-        ["b", 4],
         ["a", 1],
-        ["aac", 3],
-        ["aab", 2]
+        ["aac", 4],
+        ["aaa", 2],
+        ["aab", 3]
       ]).keys()
     ],
-    ["", "a", "aab", "aac", "b"]
+    ["", "a", "aaa", "aab", "aac"]
   );
   end();
 });
@@ -916,10 +916,10 @@ test("trie-mapping values() with a non-empty trie", ({ deepEqual, end }) => {
     [
       ...trieMapping([
         ["", 0],
-        ["b", 4],
         ["a", 1],
-        ["aac", 3],
-        ["aab", 2]
+        ["aac", 4],
+        ["aaa", 2],
+        ["aab", 3]
       ]).values()
     ],
     [0, 1, 2, 3, 4]
@@ -955,8 +955,8 @@ test("trie-mapping [@@iterator]() with a non-empty trie", ({
   end
 }) => {
   deepEqual(
-    [...trieMapping([["", 0], ["b", 4], ["a", 1], ["aac", 3], ["aab", 2]])],
-    [["", 0], ["a", 1], ["aab", 2], ["aac", 3], ["b", 4]]
+    [...trieMapping([["", 0], ["a", 1], ["aac", 4], ["aaa", 2], ["aab", 3]])],
+    [["", 0], ["a", 1], ["aaa", 2], ["aab", 3], ["aac", 4]]
   );
   end();
 });
