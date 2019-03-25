@@ -71,27 +71,27 @@ trieMapping([
   ["bye", 0]
 ]).root;
 // =>
-{
-  size: 6,
-  h: {
-    e: {
-      "": 1,
-      y: { "": 5 },
-      l: {
-        l: {
-          s: { "": 4 },
-          o: { "": 3 },
-          "": 2
-        }
-      }
-    }
-  },
-  b: {
-    y: {
-      e: { "": 0 }
-    }
-  }
-}
+// {
+//   size: 6,
+//   h: {
+//     e: {
+//       "": 1,
+//       y: { "": 5 },
+//       l: {
+//         l: {
+//           s: { "": 4 },
+//           o: { "": 3 },
+//           "": 2
+//         }
+//       }
+//     }
+//   },
+//   b: {
+//     y: {
+//       e: { "": 0 }
+//     }
+//   }
+// }
 ```
 
 This getter exposes the inner state of the trie, so that some advanced use cases are possible, such as:
@@ -140,8 +140,7 @@ trieMapping([
   ["hell", 2],
   ["bye", 0]
 ]).getPrefixedWith("hell");
-// =>
-[["hell", 2], ["hello", 3], ["hells", 4]]
+// => [["hell", 2], ["hello", 3], ["hells", 4]]
 ```
 
 ### `getPrefixesOf(string)`
@@ -151,7 +150,7 @@ Returns an array that contains an array of `[key, value]` for each key that is a
 ```js
 import trieMapping from "trie-mapping";
 
- trieMapping([
+trieMapping([
   ["he", 1],
   ["hey", 5],
   ["hells", 4],
@@ -159,8 +158,7 @@ import trieMapping from "trie-mapping";
   ["hell", 2],
   ["bye", 0]
 ]).getPrefixesOf("hello");
-// =>
-[["he", 1], ["hell", 2], ["hello", 3]]
+// => [["he", 1], ["hell", 2], ["hello", 3]]
 ```
 
 ### `has(key)`
@@ -194,4 +192,4 @@ It can be transpiled to ES5 without the need for polyfills, since it does not re
 [MIT](./LICENSE)
 
 [iterable]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators#Iterables
-[`Iterator`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators#Iterators
+[`iterator`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators#Iterators
