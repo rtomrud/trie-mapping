@@ -3,8 +3,10 @@ const sizeKey = "size";
 const { hasOwnProperty } = Object.prototype;
 const { keys } = Object;
 
-const createIterator = (root, createIteratorValue) => {
-  const path = [];
+const pendingPaths = [];
+
+const createIterator = (path, createIteratorValue) => {
+  pendingPaths.push(path);
   let done = false;
   const iterator = {
     next() {
@@ -12,14 +14,31 @@ const createIterator = (root, createIteratorValue) => {
         return { done, value: undefined };
       }
 
-      if (path.length === 0) {
-        path.push(["", root]);
-        if (hasOwnProperty.call(root, valueKey)) {
+      let [lastCharacter, node] = path.pop();
+      if (lastCharacter == null) {
+        if (hasOwnProperty.call(node, valueKey)) {
+          path.push(["", node]);
           return { done, value: createIteratorValue(path) };
         }
+
+        lastCharacter = "";
       }
 
-      let [lastCharacter, node] = path.pop();
+      if (node == null) {
+        path.push([lastCharacter, node]);
+        const { length } = path;
+        let i = 1;
+        [[lastCharacter, node]] = path;
+        node = node[lastCharacter];
+        while (node != null && i < length) {
+          path[i][1] = node;
+          node = node[path[i][0]];
+          i += 1;
+        }
+
+        [[lastCharacter, node]] = path.splice(i - 1);
+      }
+
       let nextCharacter = (nextCharacter, key) =>
         key > lastCharacter &&
         (key < nextCharacter || nextCharacter === lastCharacter) &&
@@ -29,6 +48,7 @@ const createIterator = (root, createIteratorValue) => {
       let character = keys(node).reduce(nextCharacter, lastCharacter);
       while (character === lastCharacter) {
         if (path.length === 0) {
+          pendingPaths.splice(pendingPaths.indexOf(path), 1);
           done = true;
           return { done, value: undefined };
         }
@@ -111,6 +131,11 @@ export default function(elements) {
      */
     clear() {
       root = { [sizeKey]: 0 };
+      pendingPaths.forEach(path => {
+        path.forEach((step, i) => {
+          step[1] = i > 0 ? null : root;
+        });
+      });
     },
 
     /**
@@ -152,7 +177,7 @@ export default function(elements) {
      * for each element in alphabetical order.
      */
     entries() {
-      return createIterator(root, entry);
+      return createIterator([[null, root]], entry);
     },
 
     /**
@@ -163,7 +188,7 @@ export default function(elements) {
      */
     forEach(callbackfn, thisArg) {
       const boundCallbackfn = callbackfn.bind(thisArg);
-      const { next } = createIterator(root, entry);
+      const { next } = createIterator([[null, root]], entry);
       let { done, value: [key, value] = [] } = next();
       while (!done) {
         boundCallbackfn(value, key, trie);
@@ -192,7 +217,7 @@ export default function(elements) {
       }
 
       const prefixedWith = [];
-      const { next } = createIterator(node, entry);
+      const { next } = createIterator([[null, node]], entry);
       let { done, value: [suffix, value] = [] } = next();
       while (!done) {
         prefixedWith.push([characters + suffix, value]);
@@ -238,7 +263,7 @@ export default function(elements) {
      * in alphabetical order.
      */
     keys() {
-      return createIterator(root, key);
+      return createIterator([[null, root]], key);
     },
 
     /**
@@ -274,7 +299,7 @@ export default function(elements) {
      * element in alphabetical order.
      */
     values() {
-      return createIterator(root, value);
+      return createIterator([[null, root]], value);
     }
   };
   if (Symbol && Symbol.iterator) {
@@ -283,7 +308,7 @@ export default function(elements) {
      * for each element in alphabetical order.
      */
     trie[Symbol.iterator] = function() {
-      return createIterator(root, entry);
+      return createIterator([[null, root]], entry);
     };
   }
 
