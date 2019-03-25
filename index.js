@@ -3,8 +3,15 @@ const sizeKey = "size";
 const { hasOwnProperty } = Object.prototype;
 const { keys } = Object;
 
+// Keep track of pending iterators in case `clear()` is called
 const pendingPaths = [];
 
+// Iterator value creators
+const key = path => path.reduce((key, [character]) => key + character, "");
+const value = path => path[path.length - 1][1][valueKey];
+const entry = path => [key(path), value(path)];
+
+// `path` is an array of `[character, node]` representing the in-depth traversal
 const createIterator = (path, createIteratorValue) => {
   pendingPaths.push(path);
   let done = false;
@@ -15,6 +22,8 @@ const createIterator = (path, createIteratorValue) => {
       }
 
       let [lastCharacter, node] = path.pop();
+
+      // If it's the first call to next(), check the empty string
       if (lastCharacter == null) {
         if (hasOwnProperty.call(node, valueKey)) {
           path.push(["", node]);
@@ -24,6 +33,7 @@ const createIterator = (path, createIteratorValue) => {
         lastCharacter = "";
       }
 
+      // If clear() is called before the iterator is done, reconstruct the path
       if (node == null) {
         path.push([lastCharacter, node]);
         const { length } = path;
@@ -39,6 +49,7 @@ const createIterator = (path, createIteratorValue) => {
         [[lastCharacter, node]] = path.splice(i - 1);
       }
 
+      // Find the next branch
       let nextCharacter = (nextCharacter, key) =>
         key > lastCharacter &&
         (key < nextCharacter || nextCharacter === lastCharacter) &&
@@ -57,6 +68,7 @@ const createIterator = (path, createIteratorValue) => {
         character = keys(node).reduce(nextCharacter, lastCharacter);
       }
 
+      // Find the first value in the branch
       path.push([character, node]);
       node = node[character];
       nextCharacter = (nextCharacter, key) =>
@@ -79,11 +91,6 @@ const createIterator = (path, createIteratorValue) => {
 
   return iterator;
 };
-
-// Iterator value creators
-const key = path => path.reduce((key, [character]) => key + character, "");
-const value = path => path[path.length - 1][1][valueKey];
-const entry = path => [key(path), value(path)];
 
 const getNode = (root, key) => {
   const { length } = key;
