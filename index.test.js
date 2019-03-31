@@ -391,8 +391,12 @@ test("trie-mapping clear() with suspended iterators", ({ deepEqual, end }) => {
   const trie = trieMapping([["hi", 2], ["hello", 0]]);
   const iterator1 = trie.entries();
   const iterator2 = trie.entries();
+  const otherTrie = trieMapping([["one", 0], ["two", 1]]);
+  const otherTrieIterator = otherTrie.entries();
+  otherTrieIterator.next();
   deepEqual(iterator1.next(), { done: false, value: ["hello", 0] });
   trie.clear();
+  deepEqual(otherTrieIterator.next(), { done: false, value: ["two", 1] });
   trie.set("he", 0);
   trie.set("hey", 1);
   deepEqual(iterator2.next(), { done: false, value: ["he", 0] });

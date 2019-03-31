@@ -3,16 +3,13 @@ const sizeKey = "size";
 const { hasOwnProperty } = Object.prototype;
 const { keys } = Object;
 
-// Keep track of pending iterators in case `clear()` is called
-const pendingPaths = [];
-
 // Iterator value creators
 const key = path => path.reduce((key, [character]) => key + character, "");
 const value = path => path[path.length - 1][1][valueKey];
 const entry = path => [key(path), value(path)];
 
 // `path` is an array of `[character, node]` representing the in-depth traversal
-const createIterator = (path, createIteratorValue) => {
+const createIterator = (pendingPaths, path, createIteratorValue) => {
   pendingPaths.push(path);
   let done = false;
   const iterator = {
@@ -115,6 +112,9 @@ export default function(elements) {
     throw TypeError();
   }
 
+  // Keep track of pending iterators in case `clear()` is called
+  const pendingPaths = [];
+
   let root = null;
   const trie = {
     /**
@@ -184,7 +184,7 @@ export default function(elements) {
      * for each element in alphabetical order.
      */
     entries() {
-      return createIterator([[null, root]], entry);
+      return createIterator(pendingPaths, [[null, root]], entry);
     },
 
     /**
@@ -195,7 +195,7 @@ export default function(elements) {
      */
     forEach(callbackfn, thisArg) {
       const boundCallbackfn = callbackfn.bind(thisArg);
-      const { next } = createIterator([[null, root]], entry);
+      const { next } = createIterator(pendingPaths, [[null, root]], entry);
       let { done, value: [key, value] = [] } = next();
       while (!done) {
         boundCallbackfn(value, key, trie);
@@ -224,7 +224,7 @@ export default function(elements) {
       }
 
       const prefixedWith = [];
-      const { next } = createIterator([[null, node]], entry);
+      const { next } = createIterator(pendingPaths, [[null, node]], entry);
       let { done, value: [suffix, value] = [] } = next();
       while (!done) {
         prefixedWith.push([characters + suffix, value]);
@@ -270,7 +270,7 @@ export default function(elements) {
      * in alphabetical order.
      */
     keys() {
-      return createIterator([[null, root]], key);
+      return createIterator(pendingPaths, [[null, root]], key);
     },
 
     /**
@@ -306,7 +306,7 @@ export default function(elements) {
      * element in alphabetical order.
      */
     values() {
-      return createIterator([[null, root]], value);
+      return createIterator(pendingPaths, [[null, root]], value);
     }
   };
   if (Symbol && Symbol.iterator) {
@@ -315,7 +315,7 @@ export default function(elements) {
      * for each element in alphabetical order.
      */
     trie[Symbol.iterator] = function() {
-      return createIterator([[null, root]], entry);
+      return createIterator(pendingPaths, [[null, root]], entry);
     };
   }
 
