@@ -3,10 +3,10 @@ const { join } = require("path");
 
 const mapJSON = readFileSync(join(__dirname, "../data/map.json"));
 const map = new Map(JSON.parse(mapJSON));
-const prefix = "un";
+const prefix = "prep";
 
 module.exports = {
-  name: "map get-prefixed-with",
+  name: "map prefixed-with",
   fn() {
     const { length } = prefix;
     const prefixedWith = [];

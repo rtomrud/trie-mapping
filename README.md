@@ -3,12 +3,12 @@
 [![npm version](https://img.shields.io/npm/v/trie-mapping.svg?style=flat-square)](https://www.npmjs.com/package/trie-mapping)
 [![Build Status](https://travis-ci.com/rtomrud/trie-mapping.svg?branch=master)](https://travis-ci.com/rtomrud/trie-mapping)
 
-A [trie](https://en.wikipedia.org/wiki/Trie) to store key-value pairs with efficient prefix-based retrievals
+A [compact trie](https://en.wikipedia.org/wiki/Radix_tree) for mapping keys to values with efficient prefix-based retrievals
 
-- Mimics API of [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map), but with iteration in alphabetical order instead of in insertion order
-- Methods [`getPrefixedWith()`](#getprefixedwithprefix) and [`getPrefixesOf()`](#getprefixesofstring), for efficient prefix-based retrievals
-- A [`root`](#root) getter that returns the trie's root, for efficient serialization and deserialization
-- Fast, lightweight (1 KB minified and gzipped), no dependencies, and [ES5 compatible](#ecmascript-compatibility)
+- Mimics the API of the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map), but with iteration in alphabetical order instead of in insertion order
+- Retrieve prefixes and suffixes with [`branchOfFirstPrefix()`](#branchoffirstprefixstring), [`branchOfLastPrefix()`](#branchoflastprefixstring), and [`branchPrefixedWith()`](#branchprefixedwithprefix)
+- Compact payload and efficient serialization and deserialization with the [`root`](#root) getter
+- Lightweight (1.5 kB minified and gzipped), no dependencies, and [ES5 compatible](#ecmascript-compatibility)
 
 ## Installing
 
@@ -21,15 +21,21 @@ npm install trie-mapping
 The API mimics that of the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map), with the following differences:
 
 - The `key` argument of [`get()`](#getkey), [`delete()`](#deletekey), [`has()`](#haskey), and [`set()`](#setkey-value) must be a string
-- The traversal order of [`entries()`](#entries), [`forEach()`](#foreachcallbackfn-thisarg), [`keys()`](#keys), [`values()`](#values), and [`[@@iterator]()`](#iterator) is alphabetical
-- It has the methods [`getPrefixedWith()`](#getprefixedwithprefix) and [`getPrefixesOf()`](#getprefixesofstring)
-- It exports a [factory function](#triemapelements), which can be initialized from any iterable or a trie's [`root`](#root) object
+- The iteration order of [`entries()`](#entries), [`forEach()`](#foreachcallbackfn-thisarg), [`keys()`](#keys), [`values()`](#values), and [`[@@iterator]()`](#iterator) is alphabetical
+- It has the methods [`branchOfFirstPrefix()`](#branchoffirstprefixstring), [`branchOfLastPrefix()`](#branchoflastprefixstring), and [`branchPrefixedWith()`](#branchprefixedwithprefix)
+- It exports a [factory function](#triemappingelements-compare), which can be initialized from any iterable or a trie's [`root`](#root) object
 
-[`size`](#size) and [`clear()`](#clear) are identical to those of the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map).
+The [`size`](#size) getter and the [`clear()`](#clear) method are identical to those of the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map).
 
-### `trieMapping(elements)`
+_Note that when a given argument that must be a string is not, it is converted with [`String()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)._
 
-Returns a trie object, which is [iterable]. It can be initialized from the given `elements`, which is an array or other iterable whose elements are key-value pairs, or a trie's root object. If initialized from a trie's root object, the argument may be deeply mutated by the trie's methods.
+### `trieMapping(elements, compare)`
+
+Returns a trie object, which is [iterable].
+
+It can be initialized from the given `elements`, which is an array or other iterable whose elements are key-value pairs, or a root object. If `elements` is a root object, it may be deeply mutated by the trie's methods.
+
+The iteration order of [`keys()`](#keys), [`values()`](#values), [`entries()`](#entries), and [`[@@iterator]()`](#iterator) can be customized by passing a `compare` function as the second argument, which must return a positive number if its first argument is lower than the second one, or a negative number if it is higher. By default the iteration order is by each character's Unicode code point value.
 
 ```js
 import trieMapping from "trie-mapping";
@@ -38,26 +44,36 @@ import trieMapping from "trie-mapping";
 trieMapping();
 
 // Initialize from an array
-trieMapping([["hi", 0], ["hey", 1]]);
+trieMapping([["hey", 0], ["hi", 1]]);
 
 // Initialize from an iterable
-trieMapping(new Map([["hi", 0], ["hey", 1]]));
+trieMapping(new Map([["hey", 0], ["hi", 1]]));
 
-// Initialize from a trie's root object, like the one returned by `root`
+// Initialize from a trie's root object, e.g., what the `root` getter returns
 trieMapping({
-  size: 2,
   h: {
-    i: { "": 0 },
-    e: {
-      y: { "": 1 }
-    }
+    ey: { "": 0 },
+    i: { "": 1 }
   }
 });
 ```
 
+```js
+import trieMapping from "trie-mapping";
+
+// Initialize with a compare function for locale sensitive iteration order
+[
+  ...trieMapping(
+    [["resume", 0], ["rosé", 2], ["résumé", 1]],
+    Intl.Collator("en").compare
+  )
+];
+// => [["resume", 0], ["résumé", 1], ["rosé", 2]]
+```
+
 ### `root`
 
-Returns the trie's root object, where values have the key `""`, the size of the trie has the key `size` at the root object, and the characters of a key are at a depth equal to their index in the key.
+Returns the root node, whose `""` key is the label of its value, and the rest of its keys are the labels of its child nodes.
 
 ```js
 import trieMapping from "trie-mapping";
@@ -72,38 +88,111 @@ trieMapping([
 ]).root;
 // =>
 // {
-//   size: 6,
-//   h: {
-//     e: {
-//       "": 1,
-//       y: { "": 5 },
-//       l: {
-//         l: {
-//           s: { "": 4 },
-//           o: { "": 3 },
-//           "": 2
-//         }
-//       }
+//   he: {
+//     "": 1,
+//     y: { "": 5 },
+//     ll: {
+//       s: { "": 4 },
+//       o: { "": 3 },
+//       "": 2
 //     }
 //   },
-//   b: {
-//     y: {
-//       e: { "": 0 }
-//     }
-//   }
+//   bye: { "": 0 }
 // }
 ```
 
 This getter exposes the inner state of the trie, so that some advanced use cases are possible, such as:
 
 - Serializing a trie as JSON in a more compact way, and quickly, than with [`entries()`](#entries)
-- Efficiently creating a new trie by passing to [`trieMapping()`](#triemapelements) a trie's root object
+- Efficiently initializing a new trie by passing a trie's root node to the [`trieMapping()`](#triemappingelements-compare) factory function
 - Creating a new trie from a subtree of another trie
 - Composing a new trie by merging other tries
 
 ### `size`
 
 Returns the number of key-value pairs.
+
+_Note that if the trie was initialized from a [root](#root) object, getting the `size` for the first time requires traversing the trie to count the number of elements. Afterwards, the size is memoized, even if you [`delete()`](#deletekey) or [`set()`](#setkey-value) elements._
+
+### `branchOfFirstPrefix(string)`
+
+Returns the first prefix of the given `string` and its branch node as `[prefix, branch]`, or `[]` if there is none.
+
+```js
+import trieMapping from "trie-mapping";
+
+const trie = trieMapping([["h", 0], ["he", 1], ["hello", 2], ["hey", 3]]);
+
+trie.branchOfFirstPrefix("hellos");
+// => ["h", { "": 0, "e": { "": 1, "llo": { "": 2 }, "y": { "": 3 } } }]
+
+// Get the key of the first prefix of the given string
+trie.branchOfFirstPrefix("hellos")[0];
+// => "h"
+
+// Get the value of the first prefix of the given string
+trie.branchOfFirstPrefix("hellos")[1][""];
+// => 0
+
+// Get all entries prefixed with the first prefix of the given string
+const [prefix, branch] = trie.branchOfFirstPrefix("hel");
+Array.from(trieMapping(branch).entries(), ([key, val]) => [prefix + key, val]);
+// => [["h", 0], ["he", 1], ["hello", 2], ["hey", 3]]
+```
+
+### `branchOfLastPrefix(string)`
+
+Returns the last prefix of the given `string` and its branch node as `[prefix, branch]`, or `[]` if there is none.
+
+```js
+import trieMapping from "trie-mapping";
+
+const trie = trieMapping([["h", 0], ["he", 1], ["hello", 2], ["hey", 3]]);
+
+trie.branchOfLastPrefix("hellos");
+// => ["hello", { "": 2 }]
+
+// Get the key of the last prefix of the given string
+trie.branchOfLastPrefix("hellos")[0];
+// => "hello"
+
+// Get the value of the last prefix of the given string
+trie.branchOfLastPrefix("hellos")[1][""];
+// => 2
+
+// Get all entries prefixed with the last prefix of the given string
+const [prefix, branch] = trie.branchOfLastPrefix("hel");
+Array.from(trieMapping(branch).entries(), ([key, val]) => [prefix + key, val]);
+// => [["he", 1], ["hello", 2], ["hey", 3]]
+```
+
+### `branchPrefixedWith(prefix)`
+
+Returns the string of the branch prefixed with the given `prefix` and its branch node as `[string, branch]`, or `[]` if there is none.
+
+_Note that if the given `prefix` is not in the trie, yet there are keys prefixed with it, the returned `string` will not equal `prefix`._
+
+```js
+import trieMapping from "trie-mapping";
+
+const trie = trieMapping([["h", 0], ["he", 1], ["hello", 2], ["hey", 3]]);
+
+trie.branchPrefixedWith("hel");
+// => ["hello", { "": 2 }]
+
+// Get the first key prefixed with the given string
+trie.branchPrefixedWith("hel")[0];
+// => "hello"
+
+// Get the value of the first key prefixed with the given string
+trie.branchPrefixedWith("hel")[1][""];
+// => 2
+
+// Get all entries prefixed with the given string
+const [string, branch] = trie.branchPrefixedWith("he");
+Array.from(trieMapping(branch).entries(), ([key, val]) => [string + key, val]);
+// => [["he", 1], ["hello", 2], ["hey", 3]]
+```
 
 ### `clear()`
 
@@ -124,42 +213,6 @@ Calls the given `callbackfn` once for each key-value pair, in alphabetical order
 ### `get(key)`
 
 Returns the value associated to the given `key`, or `undefined` if there is none.
-
-### `getPrefixedWith(prefix)`
-
-Returns an array that contains an array of `[key, value]` for each key prefixed with the given `prefix`, in alphabetical order.
-
-```js
-import trieMapping from "trie-mapping";
-
-trieMapping([
-  ["he", 1],
-  ["hey", 5],
-  ["hells", 4],
-  ["hello", 3],
-  ["hell", 2],
-  ["bye", 0]
-]).getPrefixedWith("hell");
-// => [["hell", 2], ["hello", 3], ["hells", 4]]
-```
-
-### `getPrefixesOf(string)`
-
-Returns an array that contains an array of `[key, value]` for each key that is a prefix of the given `string`, in alphabetical order.
-
-```js
-import trieMapping from "trie-mapping";
-
-trieMapping([
-  ["he", 1],
-  ["hey", 5],
-  ["hells", 4],
-  ["hello", 3],
-  ["hell", 2],
-  ["bye", 0]
-]).getPrefixesOf("hello");
-// => [["he", 1], ["hell", 2], ["hello", 3]]
-```
 
 ### `has(key)`
 

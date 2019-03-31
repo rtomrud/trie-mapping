@@ -1,16 +1,218 @@
-const valueKey = "";
-const sizeKey = "size";
-const { hasOwnProperty } = Object.prototype;
 const { keys } = Object;
+const { hasOwnProperty } = Object.prototype;
 
-// Iterator value creators
-const key = path => path.reduce((key, [character]) => key + character, "");
-const value = path => path[path.length - 1][1][valueKey];
-const entry = path => [key(path), value(path)];
+// Does not consider the empty string a prefix of any string
+const findKeyPrefixOf = (object, string) => {
+  const { length } = string;
+  let end = 1;
+  while (end <= length) {
+    const key = string.substring(0, end);
+    if (hasOwnProperty.call(object, key)) {
+      return key;
+    }
 
-// `path` is an array of `[character, node]` representing the in-depth traversal
-const createIterator = (pendingPaths, path, createIteratorValue) => {
-  pendingPaths.push(path);
+    end += 1;
+  }
+
+  return undefined;
+};
+
+// Only considers the empty string a prefix of another empty string
+const findKeyPrefixedWith = (object, prefix) => {
+  const { length } = prefix;
+  for (const key in object) {
+    if (
+      hasOwnProperty.call(object, key) &&
+      key.substring(0, length) === prefix
+    ) {
+      return key;
+    }
+  }
+
+  return undefined;
+};
+
+// Does not consider the empty string a prefix of a non-empty string
+const findKeyWithCommonPrefix = (object, string) => {
+  const char = string.charAt(0);
+  for (const key in object) {
+    if (hasOwnProperty.call(object, key) && key.charAt(0) === char) {
+      return key;
+    }
+  }
+
+  return undefined;
+};
+
+const findFirstKey = (object, compare) => {
+  let first;
+  for (const key in object) {
+    if (
+      hasOwnProperty.call(object, key) &&
+      (!first || compare(first, key) > 0)
+    ) {
+      first = key;
+    }
+  }
+
+  return first;
+};
+
+const findNextKey = (object, compare, currentKey) => {
+  let next;
+  for (const key in object) {
+    if (
+      hasOwnProperty.call(object, key) &&
+      compare(key, currentKey) > 0 &&
+      (!next || compare(next, key) > 0)
+    ) {
+      next = key;
+    }
+  }
+
+  return next;
+};
+
+const branchOfFirstPrefix = (root, string) => {
+  if (hasOwnProperty.call(root, "")) {
+    return ["", root];
+  }
+
+  const { length } = string;
+  let node = root;
+  let suffix = string;
+  let key = findKeyPrefixOf(node, suffix);
+  while (key && suffix.length > 0) {
+    node = node[key];
+    suffix = suffix.substring(key.length);
+    if (hasOwnProperty.call(node, "")) {
+      return [string.substring(0, length - suffix.length), node];
+    }
+
+    key = findKeyPrefixOf(node, suffix);
+  }
+
+  return [];
+};
+
+const branchOfLastPrefix = (root, string) => {
+  const { length } = string;
+  let node = root;
+  let suffix = string;
+  let key = findKeyPrefixOf(node, suffix);
+  let prefix;
+  let prefixNode;
+  if (hasOwnProperty.call(node, "")) {
+    prefix = "";
+    prefixNode = node;
+  }
+
+  while (key && suffix.length > 0) {
+    node = node[key];
+    suffix = suffix.substring(key.length);
+    if (hasOwnProperty.call(node, "")) {
+      prefix = string.substring(0, length - suffix.length);
+      prefixNode = node;
+    }
+
+    key = findKeyPrefixOf(node, suffix);
+  }
+
+  return prefixNode ? [prefix, prefixNode] : [];
+};
+
+const branchPrefixedWith = (root, prefix) => {
+  let node = root;
+  let suffix = prefix;
+  let key = findKeyPrefixOf(node, suffix);
+  while (key && suffix.length > 0) {
+    node = node[key];
+    suffix = suffix.substring(key.length);
+    key = findKeyPrefixOf(node, suffix);
+  }
+
+  if (suffix.length === 0) {
+    return node === root && !hasOwnProperty.call(root, prefix)
+      ? []
+      : [prefix, node];
+  }
+
+  key = findKeyPrefixedWith(node, suffix);
+  return key
+    ? [prefix.substring(0, prefix.length - suffix.length) + key, node[key]]
+    : [];
+};
+
+const findFirstBranch = root => {
+  for (const key in root) {
+    if (hasOwnProperty.call(root, key)) {
+      return root;
+    }
+  }
+
+  return undefined;
+};
+
+const findLastBranch = (root, string) => {
+  let node = root;
+  let suffix = string;
+  let key = findKeyPrefixOf(node, suffix);
+  while (key && suffix.length > 0) {
+    node = node[key];
+    suffix = suffix.substring(key.length);
+    key = findKeyPrefixOf(node, suffix);
+  }
+
+  return suffix.length === 0 ? node : undefined;
+};
+
+// Mutates the `path` argument
+const findNextBranch = (root, compare, path) => {
+  // Traverse the path storing the nodes along it
+  path.pop();
+  const { length } = path;
+  const nodes = [];
+  let key = "";
+  let node = root;
+  let step = 0;
+  while (node && step < length) {
+    nodes.push(node);
+    node = node[path[step]];
+    step += 1;
+  }
+
+  // If the path diverged, find the first branch after the diversion point
+  if (!node) {
+    let suffix = path.splice(step - 1).join("");
+    node = nodes.pop();
+    key = findKeyPrefixOf(node, suffix);
+    while (key && suffix.length > 0) {
+      path.push(key);
+      nodes.push(node);
+      node = node[key];
+      suffix = suffix.substring(key.length);
+      key = findKeyPrefixOf(node, suffix);
+    }
+  }
+
+  // Find the next key
+  key = findNextKey(node, compare, key || "");
+  while (!key) {
+    if (path.length === 0) {
+      return undefined;
+    }
+
+    node = nodes.pop();
+    key = findNextKey(node, compare, path.pop());
+  }
+
+  path.push(key);
+  return node[key];
+};
+
+// Iterates over keys if `index` is 0, values if it is 1, or entries otherwise
+const createIterator = (root, compare, index) => {
+  const path = [];
   let done = false;
   const iterator = {
     next() {
@@ -18,109 +220,65 @@ const createIterator = (pendingPaths, path, createIteratorValue) => {
         return { done, value: undefined };
       }
 
-      let [lastCharacter, node] = path.pop();
-
-      // If it's the first call to next(), check the empty string
-      if (lastCharacter == null) {
-        if (hasOwnProperty.call(node, valueKey)) {
-          path.push(["", node]);
-          return { done, value: createIteratorValue(path) };
-        }
-
-        lastCharacter = "";
+      // Find the next branch node
+      const findBranch = path.length === 0 ? findFirstBranch : findNextBranch;
+      let node = findBranch(root, compare, path);
+      if (!node) {
+        done = true;
+        return { done, value: undefined };
       }
 
-      // If clear() is called before the iterator is done, reconstruct the path
-      if (node == null) {
-        path.push([lastCharacter, node]);
-        const { length } = path;
-        let i = 1;
-        [[lastCharacter, node]] = path;
-        node = node[lastCharacter];
-        while (node != null && i < length) {
-          path[i][1] = node;
-          node = node[path[i][0]];
-          i += 1;
-        }
-
-        [[lastCharacter, node]] = path.splice(i - 1);
+      // Find the first branch node with a leaf in the current branch
+      while (!hasOwnProperty.call(node, "")) {
+        const key = findFirstKey(node, compare);
+        path.push(key);
+        node = node[key];
       }
 
-      // Find the next branch
-      let nextCharacter = (nextCharacter, key) =>
-        key > lastCharacter &&
-        (key < nextCharacter || nextCharacter === lastCharacter) &&
-        key.length === 1
-          ? key
-          : nextCharacter;
-      let character = keys(node).reduce(nextCharacter, lastCharacter);
-      while (character === lastCharacter) {
-        if (path.length === 0) {
-          pendingPaths.splice(pendingPaths.indexOf(path), 1);
-          done = true;
-          return { done, value: undefined };
-        }
-
-        [lastCharacter, node] = path.pop();
-        character = keys(node).reduce(nextCharacter, lastCharacter);
-      }
-
-      // Find the first value in the branch
-      path.push([character, node]);
-      node = node[character];
-      nextCharacter = (nextCharacter, key) =>
-        key < nextCharacter && key.length === 1 ? key : nextCharacter;
-      while (!hasOwnProperty.call(node, valueKey)) {
-        character = keys(node).reduce(nextCharacter);
-        path.push([character, node]);
-        node = node[character];
-      }
-
-      path.push(["", node]);
-      return { done, value: createIteratorValue(path) };
+      path.push("");
+      return {
+        done,
+        value:
+          index === 0
+            ? path.join("")
+            : index === 1
+            ? node[""]
+            : [path.join(""), node[""]]
+      };
     }
   };
   if (Symbol && Symbol.iterator) {
-    iterator[Symbol.iterator] = function() {
-      return iterator;
-    };
+    iterator[Symbol.iterator] = () => iterator;
   }
 
   return iterator;
 };
 
-const getNode = (root, key) => {
-  const { length } = key;
-  let node = root;
-  let index = 0;
-  while (node != null && index < length) {
-    node = node[key.charAt(index)];
-    index += 1;
-  }
-
-  return node;
-};
-
 /**
- * Returns a trie object, which is iterable. It can be initialized from the
- * given `elements`, which is an array or other iterable whose elements are
- * key-value pairs, or a trie's root object. If initialized from a trie's root
- * object, the argument may be deeply mutated by the trie's methods.
+ * Returns a trie object, which is iterable.
+ *
+ * It can be initialized from the given `elements`, which is an array or other
+ * iterable whose elements are key-value pairs, or a root object. If `elements`
+ * is a root object, it may be deeply mutated by the trie's methods.
+ *
+ * The iteration order of `keys()`, `values()`, `entries()`, and
+ * `[@@iterator]()` can be customized by passing a `compare` function as the
+ * second argument, which must return a positive number if its first argument is
+ * lower than the second one, or a negative number if it is higher. By default
+ * the iteration order is by each character's Unicode code point value.
  */
-export default function(elements) {
-  if (typeof elements !== "undefined" && typeof elements !== "object") {
+export default function(elements = {}, compare = (a, b) => (a > b ? 1 : -1)) {
+  if (typeof elements !== "object" || typeof compare !== "function") {
     throw TypeError();
   }
 
-  // Keep track of pending iterators in case `clear()` is called
-  const pendingPaths = [];
-
-  let root = null;
+  let root = {};
+  let size = 0;
+  let isSizeMemoized = true;
   const trie = {
     /**
-     * Returns the trie's root object, where values have the key `""`, the size
-     * of the trie has the key `size` at the root object, and the characters of
-     * a key are at a depth equal to their index in the key.
+     * Returns the root node, whose `""` key is the label of its value, and the
+     * rest of its keys are the labels of its child nodes.
      */
     get root() {
       return root;
@@ -130,53 +288,99 @@ export default function(elements) {
      * Returns the number of key-value pairs.
      */
     get size() {
-      return root[sizeKey];
+      if (!isSizeMemoized) {
+        const { next } = createIterator(root, compare, 1);
+        isSizeMemoized = true;
+        size = 0;
+        while (!next().done) {
+          size += 1;
+        }
+      }
+
+      return size;
     },
 
     /**
-     * Removes all key-value pairs
+     * Returns the first prefix of the given `string` and its branch node as
+     * `[prefix, branch]`, or `[]` if there is none.
+     */
+    branchOfFirstPrefix(string) {
+      return branchOfFirstPrefix(root, String(string));
+    },
+
+    /**
+     * Returns the last prefix of the given `string` and its branch node as
+     * `[prefix, branch]`, or `[]` if there is none.
+     */
+    branchOfLastPrefix(string) {
+      return branchOfLastPrefix(root, String(string));
+    },
+
+    /**
+     * Returns the string of the branch prefixed with the given `prefix` and its
+     * branch node as `[string, branch]`, or `[]` if there is none.
+     */
+    branchPrefixedWith(prefix) {
+      return branchPrefixedWith(root, String(prefix));
+    },
+
+    /**
+     * Removes all key-value pairs.
      */
     clear() {
-      root = { [sizeKey]: 0 };
-      pendingPaths.forEach(path => {
-        path.forEach((step, i) => {
-          step[1] = i > 0 ? null : root;
-        });
-      });
+      size = 0;
+
+      // Delete the keys of the root because suspended iterators reference it
+      keys(root).forEach(key => delete root[key]);
     },
 
     /**
      * Returns `true` if an element with the given `key` existed and has been
      * removed, or `false` if the element does not exist.
      */
-    delete(key = "") {
-      const characters = String(key);
-      const { length } = characters;
+    delete(key) {
+      let grandparent;
+      let parentKey;
+      let parent;
+      let nodeKey;
       let node = root;
-      let ancestor = root;
-      let ancestorCharacter = characters.charAt(0);
-      let index = 0;
-      while (node != null && index < length) {
-        const currentCharacter = characters.charAt(index);
-        if (keys(node).length > 1) {
-          ancestor = node;
-          ancestorCharacter = currentCharacter;
-        }
-
-        node = node[currentCharacter];
-        index += 1;
+      let suffix = String(key);
+      let nextKey = findKeyPrefixOf(node, suffix);
+      while (nextKey && suffix.length > 0) {
+        grandparent = parent;
+        parentKey = nodeKey;
+        parent = node;
+        nodeKey = nextKey;
+        node = node[nextKey];
+        suffix = suffix.substring(nodeKey.length);
+        nextKey = findKeyPrefixOf(node, suffix);
       }
 
-      if (node == null || !hasOwnProperty.call(node, valueKey)) {
+      if (suffix.length > 0 || !hasOwnProperty.call(node, "")) {
         return false;
       }
 
-      root[sizeKey] -= 1;
-      if (keys(node).length <= 1) {
-        return delete ancestor[ancestorCharacter];
+      size -= 1;
+      delete node[""];
+      if (parent) {
+        const children = keys(node);
+        if (children.length < 2) {
+          delete parent[nodeKey];
+          if (children.length === 1) {
+            const [childKey] = children;
+            parent[nodeKey + childKey] = node[childKey];
+          } else if (grandparent) {
+            const siblings = keys(parent);
+            const [siblingKey] = siblings;
+            if (siblings.length === 1 && siblingKey !== "") {
+              grandparent[parentKey + siblingKey] = parent[siblingKey];
+              delete grandparent[parentKey];
+            }
+          }
+        }
       }
 
-      return delete node[valueKey];
+      return true;
     },
 
     /**
@@ -184,7 +388,7 @@ export default function(elements) {
      * for each element in alphabetical order.
      */
     entries() {
-      return createIterator(pendingPaths, [[null, root]], entry);
+      return createIterator(root, compare);
     },
 
     /**
@@ -195,11 +399,11 @@ export default function(elements) {
      */
     forEach(callbackfn, thisArg) {
       const boundCallbackfn = callbackfn.bind(thisArg);
-      const { next } = createIterator(pendingPaths, [[null, root]], entry);
-      let { done, value: [key, value] = [] } = next();
+      const { next } = createIterator(root, compare);
+      let { done, value = [] } = next();
       while (!done) {
-        boundCallbackfn(value, key, trie);
-        ({ done, value: [key, value] = [] } = next());
+        boundCallbackfn(value[1], value[0], trie);
+        ({ done, value = [] } = next());
       }
     },
 
@@ -207,62 +411,18 @@ export default function(elements) {
      * Returns the value associated to the given `key`, or `undefined` if there
      * is none.
      */
-    get(key = "") {
-      const node = getNode(root, String(key));
-      return node == null ? undefined : node[valueKey];
-    },
-
-    /**
-     * Returns an array that contains an array of `[key, value]` for each key
-     * prefixed with the given `prefix`, in alphabetical order.
-     */
-    getPrefixedWith(prefix = "") {
-      const characters = String(prefix);
-      const node = getNode(root, characters);
-      if (node == null) {
-        return [];
-      }
-
-      const prefixedWith = [];
-      const { next } = createIterator(pendingPaths, [[null, node]], entry);
-      let { done, value: [suffix, value] = [] } = next();
-      while (!done) {
-        prefixedWith.push([characters + suffix, value]);
-        ({ done, value: [suffix, value] = [] } = next());
-      }
-
-      return prefixedWith;
-    },
-
-    /**
-     * Returns an array that contains an array of `[key, value]` for each key
-     * that is a prefix of the given `string`, in alphabetical order.
-     */
-    getPrefixesOf(string = "") {
-      const characters = String(string);
-      const { length } = characters;
-      const prefixes = [];
-      let node = root;
-      let index = 0;
-      while (node != null && index <= length) {
-        if (hasOwnProperty.call(node, valueKey)) {
-          prefixes.push([characters.slice(0, index), node[valueKey]]);
-        }
-
-        node = node[characters.charAt(index)];
-        index += 1;
-      }
-
-      return prefixes;
+    get(key) {
+      const node = findLastBranch(root, String(key));
+      return node ? node[""] : undefined;
     },
 
     /**
      * Returns `true` if a value has been associated to the given `key`, or
      * `false` otherwise.
      */
-    has(key = "") {
-      const node = getNode(root, String(key));
-      return node != null && hasOwnProperty.call(node, valueKey);
+    has(key) {
+      const node = findLastBranch(root, String(key));
+      return node ? hasOwnProperty.call(node, "") : false;
     },
 
     /**
@@ -270,34 +430,45 @@ export default function(elements) {
      * in alphabetical order.
      */
     keys() {
-      return createIterator(pendingPaths, [[null, root]], key);
+      return createIterator(root, compare, 0);
     },
 
     /**
      * Returns the trie, associating the given `value` to the given `key`.
      */
-    set(key = "", value) {
-      const characters = String(key);
-      const { length } = characters;
+    set(key, value) {
       let node = root;
-      let parent = node;
-      let index = 0;
-      while (index < length) {
-        node = node[characters.charAt(index)];
-        if (node == null) {
-          node = {};
-          parent[characters.charAt(index)] = node;
+      let suffix = String(key);
+      let nextKey = findKeyPrefixOf(node, suffix);
+      while (nextKey && suffix.length > 0) {
+        node = node[nextKey];
+        suffix = suffix.substring(nextKey.length);
+        nextKey = findKeyPrefixOf(node, suffix);
+      }
+
+      if (suffix.length === 0) {
+        node[""] = value;
+        return trie;
+      }
+
+      size += 1;
+      const keyToSplit = findKeyWithCommonPrefix(node, suffix);
+      if (keyToSplit) {
+        const { length } = keyToSplit;
+        let pos = 1;
+        while (pos < length && keyToSplit.charAt(pos) === suffix.charAt(pos)) {
+          pos += 1;
         }
 
-        parent = node;
-        index += 1;
+        node[keyToSplit.substring(0, pos)] = {
+          [keyToSplit.substring(pos)]: node[keyToSplit],
+          [suffix.substring(pos)]: pos === suffix.length ? value : { "": value }
+        };
+        delete node[keyToSplit];
+      } else {
+        node[suffix] = { "": value };
       }
 
-      if (!hasOwnProperty.call(node, valueKey)) {
-        root[sizeKey] += 1;
-      }
-
-      node[valueKey] = value;
       return trie;
     },
 
@@ -306,7 +477,7 @@ export default function(elements) {
      * element in alphabetical order.
      */
     values() {
-      return createIterator(pendingPaths, [[null, root]], value);
+      return createIterator(root, compare, 1);
     }
   };
   if (Symbol && Symbol.iterator) {
@@ -314,20 +485,16 @@ export default function(elements) {
      * Returns a new `Iterator` object that contains an array of `[key, value]`
      * for each element in alphabetical order.
      */
-    trie[Symbol.iterator] = function() {
-      return createIterator(pendingPaths, [[null, root]], entry);
-    };
+    trie[Symbol.iterator] = () => createIterator(root, compare);
   }
 
   // Initialize from argument
   if (Array.isArray(elements)) {
     // Initialize from array
-    root = { [sizeKey]: 0 };
     const { set } = trie;
     Array.prototype.forEach.call(elements, entry => set(entry[0], entry[1]));
-  } else if (elements != null && Symbol && Symbol.iterator in elements) {
+  } else if (elements !== null && Symbol && Symbol.iterator in elements) {
     // Initialize from iterable
-    root = { [sizeKey]: 0 };
     const { set } = trie;
     const iterator = elements[Symbol.iterator]();
     let { done, value } = iterator.next();
@@ -340,9 +507,9 @@ export default function(elements) {
       ({ done, value } = iterator.next());
     }
   } else {
-    // Initialize from object
+    // Initialize from object or null
     root = elements || {};
-    root[sizeKey] = root[sizeKey] || 0;
+    isSizeMemoized = false;
   }
 
   return trie;

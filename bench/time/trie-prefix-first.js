@@ -7,8 +7,9 @@ const trie = trieMapping(JSON.parse(trieJSON));
 const string = "maximally";
 
 module.exports = {
-  name: "trie get-prefixes-of",
+  name: "trie prefix-first",
   fn() {
-    return trie.getPrefixesOf(string);
+    const [prefix, branch] = trie.branchOfFirstPrefix(string);
+    return [prefix, branch[""]];
   }
 };
