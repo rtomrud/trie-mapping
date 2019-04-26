@@ -3,6 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/trie-mapping.svg?style=flat-square)](https://www.npmjs.com/package/trie-mapping)
 [![Build Status](https://travis-ci.com/rtomrud/trie-mapping.svg?branch=master)](https://travis-ci.com/rtomrud/trie-mapping)
 [![Coverage Status](https://coveralls.io/repos/github/rtomrud/trie-mapping/badge.svg?branch=master)](https://coveralls.io/github/rtomrud/trie-mapping?branch=master)
+[![Code size](https://badgen.net/bundlephobia/minzip/trie-mapping)](https://bundlephobia.com/result?p=trie-mapping)
 
 A [compact trie](https://en.wikipedia.org/wiki/Radix_tree) for mapping keys to values with efficient prefix-based retrievals
 
