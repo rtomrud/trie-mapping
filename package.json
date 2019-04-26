@@ -34,6 +34,7 @@
     "bench-space": "node --expose-gc bench/space/map.js && node --expose-gc bench/space/trie.js",
     "bench-time": "node bench/time/bench.js",
     "build": "rollup -i index.js -o dist/index.js -f cjs",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint '**/*.js'",
     "prepare": "npm run build",
     "test": "nyc --reporter html tape -r esm index.test.js | faucet && nyc check-coverage --statements 100 --branches 100 --functions 100 --lines 100",
@@ -41,6 +42,7 @@
   },
   "devDependencies": {
     "benchmark": "2.1.4",
+    "coveralls": "3.0.3",
     "eslint": "5.16.0",
     "eslint-config-pretty-strict": "1.1.0",
     "eslint-plugin-prettier": "3.0.1",
