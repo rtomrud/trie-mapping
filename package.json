@@ -35,7 +35,7 @@
     "bench-time": "node bench/time/bench.js",
     "build": "rollup -i index.js -o dist/index.js -f cjs",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "lint": "eslint '**/*.js'",
+    "lint": "eslint .",
     "prepare": "npm run build",
     "test": "nyc --reporter html tape -r esm index.test.js | faucet && nyc check-coverage --statements 100 --branches 100 --functions 100 --lines 100",
     "posttest": "npm run lint"
