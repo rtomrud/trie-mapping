@@ -17,21 +17,6 @@ const findKeyPrefixOf = (object, string) => {
   return undefined;
 };
 
-// Only considers the empty string a prefix of another empty string
-const findKeyPrefixedWith = (object, prefix) => {
-  const { length } = prefix;
-  for (const key in object) {
-    if (
-      hasOwnProperty.call(object, key) &&
-      key.substring(0, length) === prefix
-    ) {
-      return key;
-    }
-  }
-
-  return undefined;
-};
-
 // Does not consider the empty string a prefix of a non-empty string
 const findKeyWithCommonPrefix = (object, string) => {
   const char = string.charAt(0);
@@ -71,76 +56,6 @@ const findNextKey = (object, compare, currentKey) => {
   }
 
   return next;
-};
-
-const branchOfFirstPrefix = (root, string) => {
-  if (hasOwnProperty.call(root, "")) {
-    return ["", root];
-  }
-
-  const { length } = string;
-  let node = root;
-  let suffix = string;
-  let key = findKeyPrefixOf(node, suffix);
-  while (key && suffix.length > 0) {
-    node = node[key];
-    suffix = suffix.substring(key.length);
-    if (hasOwnProperty.call(node, "")) {
-      return [string.substring(0, length - suffix.length), node];
-    }
-
-    key = findKeyPrefixOf(node, suffix);
-  }
-
-  return [];
-};
-
-const branchOfLastPrefix = (root, string) => {
-  const { length } = string;
-  let node = root;
-  let suffix = string;
-  let key = findKeyPrefixOf(node, suffix);
-  let prefix;
-  let prefixNode;
-  if (hasOwnProperty.call(node, "")) {
-    prefix = "";
-    prefixNode = node;
-  }
-
-  while (key && suffix.length > 0) {
-    node = node[key];
-    suffix = suffix.substring(key.length);
-    if (hasOwnProperty.call(node, "")) {
-      prefix = string.substring(0, length - suffix.length);
-      prefixNode = node;
-    }
-
-    key = findKeyPrefixOf(node, suffix);
-  }
-
-  return prefixNode ? [prefix, prefixNode] : [];
-};
-
-const branchPrefixedWith = (root, prefix) => {
-  let node = root;
-  let suffix = prefix;
-  let key = findKeyPrefixOf(node, suffix);
-  while (key && suffix.length > 0) {
-    node = node[key];
-    suffix = suffix.substring(key.length);
-    key = findKeyPrefixOf(node, suffix);
-  }
-
-  if (suffix.length === 0) {
-    return node === root && !hasOwnProperty.call(root, prefix)
-      ? []
-      : [prefix, node];
-  }
-
-  key = findKeyPrefixedWith(node, suffix);
-  return key
-    ? [prefix.substring(0, prefix.length - suffix.length) + key, node[key]]
-    : [];
 };
 
 const findFirstBranch = root => {
@@ -298,30 +213,6 @@ export default function(elements = {}, compare = (a, b) => (a > b ? 1 : -1)) {
       }
 
       return size;
-    },
-
-    /**
-     * Returns the first prefix of the given `string` and its branch node as
-     * `[prefix, branch]`, or `[]` if there is none.
-     */
-    branchOfFirstPrefix(string) {
-      return branchOfFirstPrefix(root, String(string));
-    },
-
-    /**
-     * Returns the last prefix of the given `string` and its branch node as
-     * `[prefix, branch]`, or `[]` if there is none.
-     */
-    branchOfLastPrefix(string) {
-      return branchOfLastPrefix(root, String(string));
-    },
-
-    /**
-     * Returns the string of the branch prefixed with the given `prefix` and its
-     * branch node as `[string, branch]`, or `[]` if there is none.
-     */
-    branchPrefixedWith(prefix) {
-      return branchPrefixedWith(root, String(prefix));
     },
 
     /**

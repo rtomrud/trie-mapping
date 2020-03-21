@@ -3,11 +3,12 @@ const { join } = require("path");
 
 const mapJSON = readFileSync(join(__dirname, "../data/map.json"));
 const map = new Map(JSON.parse(mapJSON));
-const prefix = "prep";
 
 module.exports = {
   name: "map prefixed-with",
   fn() {
+    // Find all entries whose key is prefixed with the given prefix
+    const prefix = "prepar";
     const { length } = prefix;
     const prefixedWith = [];
     map.forEach((value, key) => {

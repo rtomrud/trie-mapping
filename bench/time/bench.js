@@ -17,7 +17,7 @@ Promise.resolve(
 ).then(filename => {
   const suite = Suite({
     onCycle: ({ target: { name, hz, stats } }) =>
-      console.log(name, hz.toFixed(2), stats.rme.toFixed(2)),
+      console.log(name, hz.toFixed(2), `±${stats.rme.toFixed(2)}`),
     onError: console.error
   });
   filename

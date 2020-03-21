@@ -8,7 +8,7 @@
 A [compact trie](https://en.wikipedia.org/wiki/Radix_tree) for mapping keys to values with efficient prefix-based retrievals
 
 - Mimics the API of the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map), but with iteration in alphabetical order instead of in insertion order
-- Retrieve prefixes and suffixes with [`branchOfFirstPrefix()`](#branchoffirstprefixstring), [`branchOfLastPrefix()`](#branchoflastprefixstring), and [`branchPrefixedWith()`](#branchprefixedwithprefix)
+- Allows efficient retrieval of prefixes and suffixes from the compact trie returned by the [`root`](#root) getter
 - Compact payload and efficient serialization and deserialization with the [`root`](#root) getter
 - Lightweight (1.5 kB minified and gzipped), no dependencies, and [ES5 compatible](#ecmascript-compatibility)
 
@@ -24,7 +24,6 @@ The API mimics that of the native [`Map`](https://developer.mozilla.org/en-US/do
 
 - The `key` argument of [`get()`](#getkey), [`delete()`](#deletekey), [`has()`](#haskey), and [`set()`](#setkey-value) must be a string
 - The iteration order of [`entries()`](#entries), [`forEach()`](#foreachcallbackfn-thisarg), [`keys()`](#keys), [`values()`](#values), and [`[@@iterator]()`](#iterator) is alphabetical
-- It has the methods [`branchOfFirstPrefix()`](#branchoffirstprefixstring), [`branchOfLastPrefix()`](#branchoflastprefixstring), and [`branchPrefixedWith()`](#branchprefixedwithprefix)
 - It exports a [factory function](#triemappingelements-compare), which can be initialized from any iterable or a trie's [`root`](#root) object
 
 The [`size`](#size) getter and the [`clear()`](#clear) method are identical to those of the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map).
@@ -115,86 +114,6 @@ This getter exposes the inner state of the trie, so that some advanced use cases
 Returns the number of key-value pairs.
 
 _Note that if the trie was initialized from a [root](#root) object, getting the `size` for the first time requires traversing the trie to count the number of elements. Afterwards, the size is memoized, even if you [`delete()`](#deletekey) or [`set()`](#setkey-value) elements._
-
-### `branchOfFirstPrefix(string)`
-
-Returns the first prefix of the given `string` and its branch node as `[prefix, branch]`, or `[]` if there is none.
-
-```js
-import trieMapping from "trie-mapping";
-
-const trie = trieMapping([["h", 0], ["he", 1], ["hello", 2], ["hey", 3]]);
-
-trie.branchOfFirstPrefix("hellos");
-// => ["h", { "": 0, "e": { "": 1, "llo": { "": 2 }, "y": { "": 3 } } }]
-
-// Get the key of the first prefix of the given string
-trie.branchOfFirstPrefix("hellos")[0];
-// => "h"
-
-// Get the value of the first prefix of the given string
-trie.branchOfFirstPrefix("hellos")[1][""];
-// => 0
-
-// Get all entries prefixed with the first prefix of the given string
-const [prefix, branch] = trie.branchOfFirstPrefix("hel");
-Array.from(trieMapping(branch).entries(), ([key, val]) => [prefix + key, val]);
-// => [["h", 0], ["he", 1], ["hello", 2], ["hey", 3]]
-```
-
-### `branchOfLastPrefix(string)`
-
-Returns the last prefix of the given `string` and its branch node as `[prefix, branch]`, or `[]` if there is none.
-
-```js
-import trieMapping from "trie-mapping";
-
-const trie = trieMapping([["h", 0], ["he", 1], ["hello", 2], ["hey", 3]]);
-
-trie.branchOfLastPrefix("hellos");
-// => ["hello", { "": 2 }]
-
-// Get the key of the last prefix of the given string
-trie.branchOfLastPrefix("hellos")[0];
-// => "hello"
-
-// Get the value of the last prefix of the given string
-trie.branchOfLastPrefix("hellos")[1][""];
-// => 2
-
-// Get all entries prefixed with the last prefix of the given string
-const [prefix, branch] = trie.branchOfLastPrefix("hel");
-Array.from(trieMapping(branch).entries(), ([key, val]) => [prefix + key, val]);
-// => [["he", 1], ["hello", 2], ["hey", 3]]
-```
-
-### `branchPrefixedWith(prefix)`
-
-Returns the string of the branch prefixed with the given `prefix` and its branch node as `[string, branch]`, or `[]` if there is none.
-
-_Note that if the given `prefix` is not in the trie, yet there are keys prefixed with it, the returned `string` will not equal `prefix`._
-
-```js
-import trieMapping from "trie-mapping";
-
-const trie = trieMapping([["h", 0], ["he", 1], ["hello", 2], ["hey", 3]]);
-
-trie.branchPrefixedWith("hel");
-// => ["hello", { "": 2 }]
-
-// Get the first key prefixed with the given string
-trie.branchPrefixedWith("hel")[0];
-// => "hello"
-
-// Get the value of the first key prefixed with the given string
-trie.branchPrefixedWith("hel")[1][""];
-// => 2
-
-// Get all entries prefixed with the given string
-const [string, branch] = trie.branchPrefixedWith("he");
-Array.from(trieMapping(branch).entries(), ([key, val]) => [string + key, val]);
-// => [["he", 1], ["hello", 2], ["hey", 3]]
-```
 
 ### `clear()`
 
