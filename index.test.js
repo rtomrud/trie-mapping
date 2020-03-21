@@ -23,12 +23,7 @@ test("trie-mapping with an array of arrays", ({ deepEqual, end }) => {
       ["hey", 0],
       ["hi", 1]
     ]).root,
-    {
-      h: {
-        ey: { "": 0 },
-        i: { "": 1 }
-      }
-    }
+    { h: { ey: { "": 0 }, i: { "": 1 } } }
   );
   deepEqual(
     trieMapping([
@@ -36,12 +31,7 @@ test("trie-mapping with an array of arrays", ({ deepEqual, end }) => {
       ["hi", 1],
       ["hey", 2]
     ]).root,
-    {
-      h: {
-        ey: { "": 2 },
-        i: { "": 1 }
-      }
-    }
+    { h: { ey: { "": 2 }, i: { "": 1 } } }
   );
   end();
 });
@@ -52,12 +42,7 @@ test("trie-mapping with an array of objects", ({ deepEqual, end }) => {
       { 0: "hey", 1: 0 },
       { 0: "hi", 1: 1 }
     ]).root,
-    {
-      h: {
-        ey: { "": 0 },
-        i: { "": 1 }
-      }
-    }
+    { h: { ey: { "": 0 }, i: { "": 1 } } }
   );
   deepEqual(
     trieMapping([
@@ -65,12 +50,7 @@ test("trie-mapping with an array of objects", ({ deepEqual, end }) => {
       { 0: "hi", 1: 1 },
       { 0: "hey", 1: 2 }
     ]).root,
-    {
-      h: {
-        ey: { "": 2 },
-        i: { "": 1 }
-      }
-    }
+    { h: { ey: { "": 2 }, i: { "": 1 } } }
   );
   end();
 });
@@ -83,12 +63,7 @@ test("trie-mapping with a native iterable", ({ deepEqual, end }) => {
         ["hi", 1]
       ])
     ).root,
-    {
-      h: {
-        ey: { "": 0 },
-        i: { "": 1 }
-      }
-    }
+    { h: { ey: { "": 0 }, i: { "": 1 } } }
   );
   end();
 });
@@ -150,31 +125,15 @@ test("trie-mapping with a valid custom iterable", ({ deepEqual, end }) => {
         };
       }
     }).root,
-    {
-      h: {
-        ey: { "": 0 },
-        i: { "": 1 }
-      }
-    }
+    { h: { ey: { "": 0 }, i: { "": 1 } } }
   );
   end();
 });
 
 test("trie-mapping with a trie's root object", ({ deepEqual, end }) => {
-  deepEqual(
-    trieMapping({
-      h: {
-        ey: { "": 0 },
-        i: { "": 1 }
-      }
-    }).root,
-    {
-      h: {
-        ey: { "": 0 },
-        i: { "": 1 }
-      }
-    }
-  );
+  deepEqual(trieMapping({ h: { ey: { "": 0 }, i: { "": 1 } } }).root, {
+    h: { ey: { "": 0 }, i: { "": 1 } }
+  });
   end();
 });
 
@@ -231,15 +190,7 @@ test("trie-mapping root with a non-empty trie", ({ deepEqual, end }) => {
       ["bye", 0]
     ]).root,
     {
-      he: {
-        "": 1,
-        y: { "": 5 },
-        ll: {
-          s: { "": 4 },
-          o: { "": 3 },
-          "": 2
-        }
-      },
+      he: { "": 1, y: { "": 5 }, ll: { s: { "": 4 }, o: { "": 3 }, "": 2 } },
       bye: { "": 0 }
     }
   );
@@ -250,16 +201,7 @@ test("trie-mapping root with a non-empty trie", ({ deepEqual, end }) => {
       ["hello", 2],
       ["hey", 3]
     ]).root,
-    {
-      h: {
-        "": 0,
-        e: {
-          "": 1,
-          llo: { "": 2 },
-          y: { "": 3 }
-        }
-      }
-    }
+    { h: { "": 0, e: { "": 1, llo: { "": 2 }, y: { "": 3 } } } }
   );
   end();
 });
@@ -290,42 +232,30 @@ test("trie-mapping delete() with a key that does not exist", ({
   equal,
   end
 }) => {
-  const number = trieMapping();
-  equal(number.delete(1), false);
-  deepEqual(number.root, {});
-
   const emptyString = trieMapping();
   equal(emptyString.delete(""), false);
   deepEqual(emptyString.root, {});
-
   const oneLetter = trieMapping();
   equal(oneLetter.delete("h"), false);
   deepEqual(oneLetter.root, {});
-
   const oneLetterMore = trieMapping([["hell", 0]]);
   equal(oneLetterMore.delete("hello"), false);
   deepEqual(oneLetterMore.root, { hell: { "": 0 } });
-
   const manyLettersMore = trieMapping([["he", 0]]);
   equal(manyLettersMore.delete("hello"), false);
   deepEqual(manyLettersMore.root, { he: { "": 0 } });
-
   const oneLetterLess = trieMapping([["hello", 0]]);
   equal(oneLetterLess.delete("hell"), false);
   deepEqual(oneLetterLess.root, { hello: { "": 0 } });
-
   const manyLettersLess = trieMapping([["hello", 0]]);
   equal(manyLettersLess.delete("he"), false);
   deepEqual(manyLettersLess.root, { hello: { "": 0 } });
-
   const oneDifferentLetter = trieMapping([["hello", 0]]);
   equal(oneDifferentLetter.delete("hells"), false);
   deepEqual(oneDifferentLetter.root, { hello: { "": 0 } });
-
   const manyDifferentLetters = trieMapping([["hello", 0]]);
   equal(manyDifferentLetters.delete("helio"), false);
   deepEqual(manyDifferentLetters.root, { hello: { "": 0 } });
-
   end();
 });
 
@@ -334,32 +264,24 @@ test("trie-mapping delete() with a key that exists", ({
   equal,
   end
 }) => {
-  const number = trieMapping([[1, 0]]);
-  equal(number.delete(1), true);
-  deepEqual(number.root, {});
-
   const emptyString = trieMapping([["", undefined]]);
   equal(emptyString.delete(""), true);
   deepEqual(emptyString.root, {});
-
   const noSiblings = trieMapping([["h", 0]]);
   equal(noSiblings.delete("h"), true);
   deepEqual(noSiblings.root, {});
-
   const oneSibling = trieMapping([
     ["him", 0],
     ["his", 1]
   ]);
   equal(oneSibling.delete("his"), true);
   deepEqual(oneSibling.root, { him: { "": 0 } });
-
   const onlyEmptyStringSibling = trieMapping([
     ["hi", 0],
     ["his", 1]
   ]);
   equal(onlyEmptyStringSibling.delete("his"), true);
   deepEqual(onlyEmptyStringSibling.root, { hi: { "": 0 } });
-
   const manySiblings = trieMapping([
     ["hi", 1],
     ["him", 2],
@@ -367,21 +289,18 @@ test("trie-mapping delete() with a key that exists", ({
   ]);
   equal(manySiblings.delete("his"), true);
   deepEqual(manySiblings.root, { hi: { "": 1, m: { "": 2 } } });
-
   const noSuccessors = trieMapping([
     ["hi", 0],
     ["bye", 1]
   ]);
   equal(noSuccessors.delete("bye"), true);
   deepEqual(noSuccessors.root, { hi: { "": 0 } });
-
   const oneSuccessor = trieMapping([
     ["hi", 1],
     ["his", 2]
   ]);
   equal(oneSuccessor.delete("hi"), true);
   deepEqual(oneSuccessor.root, { his: { "": 2 } });
-
   const manySuccessors = trieMapping([
     ["hi", 1],
     ["him", 2],
@@ -389,7 +308,6 @@ test("trie-mapping delete() with a key that exists", ({
   ]);
   equal(manySuccessors.delete("hi"), true);
   deepEqual(manySuccessors.root, { hi: { m: { "": 2 }, s: { "": 3 } } });
-
   end();
 });
 
@@ -459,11 +377,7 @@ test("trie-mapping entries() with a non-empty trie", ({ deepEqual, end }) => {
     [
       ...trieMapping({
         "": 0,
-        e: {
-          "": 1,
-          llo: { "": 2 },
-          y: { "": 3 }
-        }
+        e: { "": 1, llo: { "": 2 }, y: { "": 3 } }
       }).entries()
     ],
     [
@@ -474,13 +388,7 @@ test("trie-mapping entries() with a non-empty trie", ({ deepEqual, end }) => {
     ]
   );
   deepEqual(
-    [
-      ...trieMapping({
-        "": 1,
-        llo: { "": 2 },
-        y: { "": 3 }
-      }).entries()
-    ],
+    [...trieMapping({ "": 1, llo: { "": 2 }, y: { "": 3 } }).entries()],
     [
       ["", 1],
       ["llo", 2],
@@ -522,7 +430,6 @@ test("trie-mapping forEach() with an empty trie", ({ deepEqual, end }) => {
     false,
     "callbackfn is not called if trie is empty"
   );
-
   let wasCalledOnNonEmptyPrototype = false;
   trieMapping(Object.create({ hi: 0 })).forEach(() => {
     wasCalledOnNonEmptyPrototype = true;
@@ -532,7 +439,6 @@ test("trie-mapping forEach() with an empty trie", ({ deepEqual, end }) => {
     false,
     "callbackfn is not called if trie is empty but prototype is not"
   );
-
   end();
 });
 
@@ -782,14 +688,12 @@ test("trie-mapping keys() returns a well-formed iterable", ({ equal, end }) => {
 test("trie-mapping keys() with an empty trie", ({ deepEqual, end }) => {
   deepEqual([...trieMapping().keys()], []);
   deepEqual([...trieMapping(Object.create({ hi: 0 })).keys()], []);
-
   const iterator = trieMapping().keys();
   deepEqual(
     iterator.next() && iterator.next(),
     { done: true, value: undefined },
     "returns a done iterator when calling next() on an already done iterator"
   );
-
   end();
 });
 
@@ -847,27 +751,21 @@ test("trie-mapping set() with a key that does not exist", ({
       ["hey", 0],
       ["hello", 1]
     ]).set("hi", 2).root,
-    {
-      h: { e: { y: { "": 0 }, llo: { "": 1 } }, i: { "": 2 } }
-    }
+    { h: { e: { y: { "": 0 }, llo: { "": 1 } }, i: { "": 2 } } }
   );
   deepEqual(
     trieMapping([
       ["hey", 0],
       ["hello", 1]
     ]).set("hell", 2).root,
-    {
-      he: { y: { "": 0 }, ll: { o: { "": 1 }, "": 2 } }
-    }
+    { he: { y: { "": 0 }, ll: { o: { "": 1 }, "": 2 } } }
   );
   deepEqual(
     trieMapping([
       ["hey", 0],
       ["hello", 1]
     ]).set("hells", 2).root,
-    {
-      he: { y: { "": 0 }, ll: { o: { "": 1 }, s: { "": 2 } } }
-    }
+    { he: { y: { "": 0 }, ll: { o: { "": 1 }, s: { "": 2 } } } }
   );
   end();
 });
@@ -881,28 +779,21 @@ test("trie-mapping set() with a key that exists", ({ deepEqual, end }) => {
       ["", 0],
       ["hey", 1]
     ]).set("", 2).root,
-    {
-      "": 2,
-      hey: { "": 1 }
-    }
+    { "": 2, hey: { "": 1 } }
   );
   deepEqual(
     trieMapping([
       ["he", 0],
       ["hey", 1]
     ]).set("he", 2).root,
-    {
-      he: { "": 2, y: { "": 1 } }
-    }
+    { he: { "": 2, y: { "": 1 } } }
   );
   deepEqual(
     trieMapping([
       ["he", 0],
       ["hey", 1]
     ]).set("hey", 2).root,
-    {
-      he: { "": 0, y: { "": 2 } }
-    }
+    { he: { "": 0, y: { "": 2 } } }
   );
   end();
 });
@@ -921,14 +812,12 @@ test("trie-mapping values() returns a well-formed iterable", ({
 test("trie-mapping values() with an empty trie", ({ deepEqual, end }) => {
   deepEqual([...trieMapping().values()], []);
   deepEqual([...trieMapping(Object.create({ hi: 0 })).values()], []);
-
   const iterator = trieMapping().values();
   deepEqual(
     iterator.next() && iterator.next(),
     { done: true, value: undefined },
     "returns a done iterator when calling next() on an already done iterator"
   );
-
   end();
 });
 
@@ -988,14 +877,12 @@ test("trie-mapping [@@iterator]() returns a well-formed iterable", ({
 test("trie-mapping [@@iterator]() with an empty trie", ({ deepEqual, end }) => {
   deepEqual([...trieMapping()], []);
   deepEqual([...trieMapping(Object.create({ hi: 0 }))], []);
-
   const iterator = trieMapping()[Symbol.iterator]();
   deepEqual(
     iterator.next() && iterator.next(),
     { done: true, value: undefined },
     "returns a done iterator when calling next() on an already done iterator"
   );
-
   end();
 });
 
@@ -1062,26 +949,21 @@ test("trie-mapping when there's no Symbol.iterator, e.g., IE 11", ({
   const entriesIterator = trie.entries();
   const valuesIterator = trie.values();
   Symbol = symbol; // eslint-disable-line no-global-assign
-
   equal(trie[Symbol.iterator], undefined);
-
   equal(keysIterator[Symbol.iterator], undefined);
   throws(() => [...keysIterator]);
   deepEqual(keysIterator.next(), { done: false, value: "hey" });
   deepEqual(keysIterator.next(), { done: false, value: "hi" });
   deepEqual(keysIterator.next(), { done: true, value: undefined });
-
   equal(entriesIterator[Symbol.iterator], undefined);
   throws(() => [...entriesIterator]);
   deepEqual(entriesIterator.next(), { done: false, value: ["hey", 1] });
   deepEqual(entriesIterator.next(), { done: false, value: ["hi", 0] });
   deepEqual(entriesIterator.next(), { done: true, value: undefined });
-
   equal(valuesIterator[Symbol.iterator], undefined);
   throws(() => [...valuesIterator]);
   deepEqual(valuesIterator.next(), { done: false, value: 1 });
   deepEqual(valuesIterator.next(), { done: false, value: 0 });
   deepEqual(valuesIterator.next(), { done: true, value: undefined });
-
   end();
 });
