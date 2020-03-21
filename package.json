@@ -61,6 +61,16 @@
     "extends": [
       "./node_modules/eslint-config-pretty-strict/index.js"
     ],
+    "overrides": [
+      {
+        "files": [
+          "./bench/**/*.js"
+        ],
+        "env": {
+          "node": true
+        }
+      }
+    ],
     "parserOptions": {
       "ecmaVersion": 2018,
       "sourceType": "module"
