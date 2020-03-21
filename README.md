@@ -23,20 +23,20 @@ npm install trie-mapping
 The API mimics that of the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map), with the following differences:
 
 - The `key` argument of [`get()`](#getkey), [`delete()`](#deletekey), [`has()`](#haskey), and [`set()`](#setkey-value) must be a string
-- The iteration order of [`entries()`](#entries), [`forEach()`](#foreachcallbackfn-thisarg), [`keys()`](#keys), [`values()`](#values), and [`[@@iterator]()`](#iterator) is alphabetical
-- It exports a [factory function](#triemappingelements-compare), which can be initialized from any iterable or a trie's [`root`](#root) object
+- The iteration order of [`entries()`](#entries), [`forEach()`](#foreachcallbackfn-thisarg), [`keys()`](#keys), [`values()`](#values), and [`[@@iterator]()`](#iterator) is alphabetical, instead of insertion order
+- It exports a [factory function](#triemappingelements), which can be initialized from any iterable or a trie's [`root`](#root) object
 
 The [`size`](#size) getter and the [`clear()`](#clear) method are identical to those of the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map).
 
 _Note that when a given argument that must be a string is not, it is converted with [`String()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)._
 
-### `trieMapping(elements, compare)`
+### `trieMapping(elements)`
 
 Returns a trie object, which is [iterable].
 
 It can be initialized from the given `elements`, which is an array or other iterable whose elements are key-value pairs, or a root object. If `elements` is a root object, it may be deeply mutated by the trie's methods.
 
-The iteration order of [`keys()`](#keys), [`values()`](#values), [`entries()`](#entries), and [`[@@iterator]()`](#iterator) can be customized by passing a `compare` function as the second argument, which must return a positive number if its first argument is lower than the second one, or a negative number if it is higher. By default the iteration order is by each character's Unicode code point value.
+The iteration order of [`keys()`](#keys), [`values()`](#values), [`entries()`](#entries), and [`[@@iterator]()`](#iterator) is alphabetical (by character Unicode code point value).
 
 ```js
 import trieMapping from "trie-mapping";
@@ -57,19 +57,6 @@ trieMapping({
     i: { "": 1 }
   }
 });
-```
-
-```js
-import trieMapping from "trie-mapping";
-
-// Initialize with a compare function for locale sensitive iteration order
-[
-  ...trieMapping(
-    [["resume", 0], ["rosé", 2], ["résumé", 1]],
-    Intl.Collator("en").compare
-  )
-];
-// => [["resume", 0], ["résumé", 1], ["rosé", 2]]
 ```
 
 ### `root`
@@ -105,7 +92,7 @@ trieMapping([
 This getter exposes the inner state of the trie, so that some advanced use cases are possible, such as:
 
 - Serializing a trie as JSON in a more compact way, and quickly, than with [`entries()`](#entries)
-- Efficiently initializing a new trie by passing a trie's root node to the [`trieMapping()`](#triemappingelements-compare) factory function
+- Efficiently initializing a new trie by passing a trie's root node to the [`trieMapping()`](#triemappingelements) factory function
 - Creating a new trie from a subtree of another trie
 - Composing a new trie by merging other tries
 

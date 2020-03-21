@@ -29,13 +29,10 @@ const findKeyWithCommonPrefix = (object, string) => {
   return undefined;
 };
 
-const findFirstKey = (object, compare) => {
+const findFirstKey = object => {
   let first;
   for (const key in object) {
-    if (
-      hasOwnProperty.call(object, key) &&
-      (!first || compare(first, key) > 0)
-    ) {
+    if (hasOwnProperty.call(object, key) && (!first || first > key)) {
       first = key;
     }
   }
@@ -43,13 +40,13 @@ const findFirstKey = (object, compare) => {
   return first;
 };
 
-const findNextKey = (object, compare, currentKey) => {
+const findNextKey = (object, currentKey) => {
   let next;
   for (const key in object) {
     if (
       hasOwnProperty.call(object, key) &&
-      compare(key, currentKey) > 0 &&
-      (!next || compare(next, key) > 0)
+      key > currentKey &&
+      (!next || next > key)
     ) {
       next = key;
     }
@@ -82,7 +79,7 @@ const findLastBranch = (root, string) => {
 };
 
 // Mutates the `path` argument
-const findNextBranch = (root, compare, path) => {
+const findNextBranch = (root, path) => {
   // Traverse the path storing the nodes along it
   path.pop();
   const { length } = path;
@@ -111,14 +108,14 @@ const findNextBranch = (root, compare, path) => {
   }
 
   // Find the next key
-  key = findNextKey(node, compare, key || "");
+  key = findNextKey(node, key || "");
   while (!key) {
     if (path.length === 0) {
       return undefined;
     }
 
     node = nodes.pop();
-    key = findNextKey(node, compare, path.pop());
+    key = findNextKey(node, path.pop());
   }
 
   path.push(key);
@@ -126,7 +123,7 @@ const findNextBranch = (root, compare, path) => {
 };
 
 // Iterates over keys if `index` is 0, values if it is 1, or entries otherwise
-const createIterator = (root, compare, index) => {
+const createIterator = (root, index) => {
   const path = [];
   let done = false;
   const iterator = {
@@ -137,7 +134,7 @@ const createIterator = (root, compare, index) => {
 
       // Find the next branch node
       const findBranch = path.length === 0 ? findFirstBranch : findNextBranch;
-      let node = findBranch(root, compare, path);
+      let node = findBranch(root, path);
       if (!node) {
         done = true;
         return { done, value: undefined };
@@ -145,7 +142,7 @@ const createIterator = (root, compare, index) => {
 
       // Find the first branch node with a leaf in the current branch
       while (!hasOwnProperty.call(node, "")) {
-        const key = findFirstKey(node, compare);
+        const key = findFirstKey(node);
         path.push(key);
         node = node[key];
       }
@@ -175,15 +172,9 @@ const createIterator = (root, compare, index) => {
  * It can be initialized from the given `elements`, which is an array or other
  * iterable whose elements are key-value pairs, or a root object. If `elements`
  * is a root object, it may be deeply mutated by the trie's methods.
- *
- * The iteration order of `keys()`, `values()`, `entries()`, and
- * `[@@iterator]()` can be customized by passing a `compare` function as the
- * second argument, which must return a positive number if its first argument is
- * lower than the second one, or a negative number if it is higher. By default
- * the iteration order is by each character's Unicode code point value.
  */
-export default function(elements = {}, compare = (a, b) => (a > b ? 1 : -1)) {
-  if (typeof elements !== "object" || typeof compare !== "function") {
+export default function(elements = {}) {
+  if (typeof elements !== "object") {
     throw TypeError();
   }
 
@@ -204,7 +195,7 @@ export default function(elements = {}, compare = (a, b) => (a > b ? 1 : -1)) {
      */
     get size() {
       if (!isSizeMemoized) {
-        const { next } = createIterator(root, compare, 1);
+        const { next } = createIterator(root, 1);
         isSizeMemoized = true;
         size = 0;
         while (!next().done) {
@@ -279,7 +270,7 @@ export default function(elements = {}, compare = (a, b) => (a > b ? 1 : -1)) {
      * for each element in alphabetical order.
      */
     entries() {
-      return createIterator(root, compare);
+      return createIterator(root);
     },
 
     /**
@@ -290,7 +281,7 @@ export default function(elements = {}, compare = (a, b) => (a > b ? 1 : -1)) {
      */
     forEach(callbackfn, thisArg) {
       const boundCallbackfn = callbackfn.bind(thisArg);
-      const { next } = createIterator(root, compare);
+      const { next } = createIterator(root);
       let { done, value = [] } = next();
       while (!done) {
         boundCallbackfn(value[1], value[0], trie);
@@ -321,7 +312,7 @@ export default function(elements = {}, compare = (a, b) => (a > b ? 1 : -1)) {
      * in alphabetical order.
      */
     keys() {
-      return createIterator(root, compare, 0);
+      return createIterator(root, 0);
     },
 
     /**
@@ -368,7 +359,7 @@ export default function(elements = {}, compare = (a, b) => (a > b ? 1 : -1)) {
      * element in alphabetical order.
      */
     values() {
-      return createIterator(root, compare, 1);
+      return createIterator(root, 1);
     }
   };
   if (Symbol && Symbol.iterator) {
@@ -376,7 +367,7 @@ export default function(elements = {}, compare = (a, b) => (a > b ? 1 : -1)) {
      * Returns a new `Iterator` object that contains an array of `[key, value]`
      * for each element in alphabetical order.
      */
-    trie[Symbol.iterator] = () => createIterator(root, compare);
+    trie[Symbol.iterator] = () => createIterator(root);
   }
 
   // Initialize from argument

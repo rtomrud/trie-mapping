@@ -6,11 +6,6 @@ test("trie-mapping with an invalid argument", ({ throws, end }) => {
   throws(() => trieMapping(0), TypeError);
   throws(() => trieMapping(""), TypeError);
   throws(() => trieMapping(() => {}), TypeError);
-  throws(() => trieMapping({}, false), TypeError);
-  throws(() => trieMapping({}, null), TypeError);
-  throws(() => trieMapping({}, 0), TypeError);
-  throws(() => trieMapping({}, ""), TypeError);
-  throws(() => trieMapping({}, {}), TypeError);
   end();
 });
 
@@ -495,30 +490,6 @@ test("trie-mapping entries() with a non-empty trie", ({ deepEqual, end }) => {
   end();
 });
 
-test("trie-mapping entries() with a non-empty trie and compare arg", ({
-  deepEqual,
-  end
-}) => {
-  deepEqual(
-    [
-      ...trieMapping(
-        [
-          ["resume", 0],
-          ["rosé", 2],
-          ["résumé", 1]
-        ],
-        Intl.Collator("en").compare
-      ).entries()
-    ],
-    [
-      ["resume", 0],
-      ["résumé", 1],
-      ["rosé", 2]
-    ]
-  );
-  end();
-});
-
 test("trie-mapping entries() with clear() while suspended", ({
   deepEqual,
   end
@@ -583,32 +554,6 @@ test("trie-mapping forEach() with a non-empty trie", ({ deepEqual, end }) => {
       [2, "aaa", trie],
       [3, "aab", trie],
       [4, "aac", trie]
-    ],
-    "callbackfn is called with the value, key and trie as arguments"
-  );
-  end();
-});
-
-test("trie-mapping forEach() with a non-empty trie and compare arg", ({
-  deepEqual,
-  end
-}) => {
-  const trie = trieMapping(
-    [
-      ["resume", 0],
-      ["rosé", 2],
-      ["résumé", 1]
-    ],
-    Intl.Collator("en").compare
-  );
-  const callbackArgs = [];
-  trie.forEach((...args) => callbackArgs.push([...args]));
-  deepEqual(
-    callbackArgs,
-    [
-      [0, "resume", trie],
-      [1, "résumé", trie],
-      [2, "rosé", trie]
     ],
     "callbackfn is called with the value, key and trie as arguments"
   );
@@ -868,26 +813,6 @@ test("trie-mapping keys() with a non-empty trie", ({ deepEqual, end }) => {
   end();
 });
 
-test("trie-mapping keys() with a non-empty trie and compare arg", ({
-  deepEqual,
-  end
-}) => {
-  deepEqual(
-    [
-      ...trieMapping(
-        [
-          ["resume", 0],
-          ["rosé", 2],
-          ["résumé", 1]
-        ],
-        Intl.Collator("en").compare
-      ).keys()
-    ],
-    ["resume", "résumé", "rosé"]
-  );
-  end();
-});
-
 test("trie-mapping keys() with clear() while suspended", ({
   deepEqual,
   end
@@ -1027,26 +952,6 @@ test("trie-mapping values() with a non-empty trie", ({ deepEqual, end }) => {
   end();
 });
 
-test("trie-mapping values() with a non-empty trie and compare arg", ({
-  deepEqual,
-  end
-}) => {
-  deepEqual(
-    [
-      ...trieMapping(
-        [
-          ["resume", 0],
-          ["rosé", 2],
-          ["résumé", 1]
-        ],
-        Intl.Collator("en").compare
-      ).values()
-    ],
-    [0, 1, 2]
-  );
-  end();
-});
-
 test("trie-mapping values() with clear() while suspended", ({
   deepEqual,
   end
@@ -1114,30 +1019,6 @@ test("trie-mapping [@@iterator]() with a non-empty trie", ({
       ["aaa", 2],
       ["aab", 3],
       ["aac", 4]
-    ]
-  );
-  end();
-});
-
-test("trie-mapping [@@iterator]() with a non-empty trie and compare arg", ({
-  deepEqual,
-  end
-}) => {
-  deepEqual(
-    [
-      ...trieMapping(
-        [
-          ["resume", 0],
-          ["rosé", 2],
-          ["résumé", 1]
-        ],
-        Intl.Collator("en").compare
-      )
-    ],
-    [
-      ["resume", 0],
-      ["résumé", 1],
-      ["rosé", 2]
     ]
   );
   end();
