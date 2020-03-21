@@ -7,11 +7,6 @@
 
 A [compact trie](https://en.wikipedia.org/wiki/Radix_tree) for mapping keys to values with efficient prefix-based retrievals
 
-- Mimics the API of the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map), but with iteration in alphabetical order instead of in insertion order
-- Allows efficient retrieval of prefixes and suffixes from the compact trie returned by the [`root`](#root) getter
-- Compact payload and efficient serialization and deserialization with the [`root`](#root) getter
-- Lightweight (1.5 kB minified and gzipped), no dependencies, and [ES5 compatible](#ecmascript-compatibility)
-
 ## Installing
 
 ```bash
@@ -20,23 +15,20 @@ npm install trie-mapping
 
 ## API
 
-The API mimics that of the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map), with the following differences:
+The API mimics the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) (so it may be used as a drop in replacement), with the following differences:
 
+- It exports a factory function ([`trieMapping()`](#triemappingelements)) which can be initialized from any iterable or a trie's [`root`](#root) object
+- It exposes the trie's internal representation through the [`root`](#root) getter to enable advanced use cases
 - The `key` argument of [`get()`](#getkey), [`delete()`](#deletekey), [`has()`](#haskey), and [`set()`](#setkey-value) must be a string
-- The iteration order of [`entries()`](#entries), [`forEach()`](#foreachcallbackfn-thisarg), [`keys()`](#keys), [`values()`](#values), and [`[@@iterator]()`](#iterator) is alphabetical, instead of insertion order
-- It exports a [factory function](#triemappingelements), which can be initialized from any iterable or a trie's [`root`](#root) object
+- The iteration order of [`entries()`](#entries), [`forEach()`](#foreachcallbackfn-thisarg), [`keys()`](#keys), [`values()`](#values), and [`[@@iterator]()`](#iterator) is alphabetical
 
-The [`size`](#size) getter and the [`clear()`](#clear) method are identical to those of the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map).
-
-_Note that when a given argument that must be a string is not, it is converted with [`String()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)._
+_The [`size`](#size) getter and the [`clear()`](#clear) method are identical to those of the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)_.
 
 ### `trieMapping(elements)`
 
 Returns a trie object, which is [iterable].
 
 It can be initialized from the given `elements`, which is an array or other iterable whose elements are key-value pairs, or a root object. If `elements` is a root object, it may be deeply mutated by the trie's methods.
-
-The iteration order of [`keys()`](#keys), [`values()`](#values), [`entries()`](#entries), and [`[@@iterator]()`](#iterator) is alphabetical (by character Unicode code point value).
 
 ```js
 import trieMapping from "trie-mapping";
@@ -89,12 +81,12 @@ trieMapping([
 // }
 ```
 
-This getter exposes the inner state of the trie, so that some advanced use cases are possible, such as:
+It exposes the inner state of the trie for use cases such as:
 
-- Serializing a trie as JSON in a more compact way, and quickly, than with [`entries()`](#entries)
-- Efficiently initializing a new trie by passing a trie's root node to the [`trieMapping()`](#triemappingelements) factory function
-- Creating a new trie from a subtree of another trie
-- Composing a new trie by merging other tries
+- Finding all entries prefixed with a given prefix ([see example](./bench/time/trie-prefixed-with.js))
+- Implementing fuzzy string searching, e.g., with [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance)
+- Serializing a trie as JSON more compactly and quickly than with [`entries()`](#entries)
+- Efficiently initializing a new trie by passing a trie node to the [`trieMapping()`](#triemappingelements) factory function
 
 ### `size`
 
