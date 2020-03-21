@@ -5,7 +5,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/rtomrud/trie-mapping/badge.svg?branch=master)](https://coveralls.io/github/rtomrud/trie-mapping?branch=master)
 [![Code size](https://badgen.net/bundlephobia/minzip/trie-mapping)](https://bundlephobia.com/result?p=trie-mapping)
 
-A [compact trie](https://en.wikipedia.org/wiki/Radix_tree) for mapping keys to values with efficient prefix-based retrievals
+A [compact trie](https://en.wikipedia.org/wiki/Radix_tree) for mapping keys to values that allows efficient prefix-based retrievals
 
 ## Installing
 

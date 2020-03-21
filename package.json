@@ -1,7 +1,7 @@
 {
   "name": "trie-mapping",
   "version": "2.0.0",
-  "description": "A compact trie for mapping keys to values with efficient prefix-based retrievals",
+  "description": "A compact trie for mapping keys to values that allows efficient prefix-based retrievals",
   "keywords": [
     "compact",
     "dictionary",
