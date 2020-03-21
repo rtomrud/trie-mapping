@@ -37,10 +37,18 @@ import trieMapping from "trie-mapping";
 trieMapping();
 
 // Initialize from an array
-trieMapping([["hey", 0], ["hi", 1]]);
+trieMapping([
+  ["hey", 0],
+  ["hi", 1]
+]);
 
 // Initialize from an iterable
-trieMapping(new Map([["hey", 0], ["hi", 1]]));
+trieMapping(
+  new Map([
+    ["hey", 0],
+    ["hi", 1]
+  ])
+);
 
 // Initialize from a trie's root object, e.g., what the `root` getter returns
 trieMapping({
