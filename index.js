@@ -167,9 +167,9 @@ const createIterator = (root, index) => {
 };
 
 /**
- * Returns a trie object, which is iterable.
+ * Returns a trie object.
  *
- * It can be initialized from the given `elements`, which is an array or other
+ * It may be initialized from the given `elements`, which is an array or other
  * iterable whose elements are key-value pairs, or a root object. If `elements`
  * is a root object, it may be deeply mutated by the trie's methods.
  */

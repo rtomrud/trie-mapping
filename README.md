@@ -16,7 +16,7 @@ npm install trie-mapping
 
 The API mimics the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) (so it may be used as a drop in replacement), with the following differences:
 
-- It exports a factory function ([`trieMapping()`](#triemappingelements)) which can be initialized from any iterable or a trie's [`root`](#root) object
+- It exports a factory function ([`trieMapping()`](#triemappingelements)) which may be initialized from a trie's [`root`](#root) object
 - It exposes the trie's internal representation through the [`root`](#root) getter to enable advanced use cases
 - The `key` argument of [`get()`](#getkey), [`delete()`](#deletekey), [`has()`](#haskey), and [`set()`](#setkey-value) must be a string
 - The iteration order of [`entries()`](#entries), [`forEach()`](#foreachcallbackfn-thisarg), [`keys()`](#keys), [`values()`](#values), and [`[@@iterator]()`](#iterator) is alphabetical
@@ -25,9 +25,9 @@ _The [`size`](#size) getter and the [`clear()`](#clear) method are identical to 
 
 ### `trieMapping(elements)`
 
-Returns a trie object, which is [iterable].
+Returns a trie object.
 
-It can be initialized from the given `elements`, which is an array or other iterable whose elements are key-value pairs, or a root object. If `elements` is a root object, it may be deeply mutated by the trie's methods.
+It may be initialized from the given `elements`, which is an array or other iterable whose elements are key-value pairs, or a root object. If `elements` is a root object, it may be deeply mutated by the trie's methods.
 
 ```js
 import trieMapping from "trie-mapping";
@@ -40,14 +40,6 @@ trieMapping([
   ["hey", 0],
   ["hi", 1]
 ]);
-
-// Initialize from an iterable
-trieMapping(
-  new Map([
-    ["hey", 0],
-    ["hi", 1]
-  ])
-);
 
 // Initialize from a trie's root object, e.g., what the `root` getter returns
 trieMapping({
@@ -141,15 +133,8 @@ Returns a new [`Iterator`] object that contains the values for each element in a
 
 Returns a new [`Iterator`] object that contains an array of `[key, value]` for each element in alphabetical order.
 
-## ECMAScript compatibility
-
-This module supports every mantained version of Node, every modern browser, and IE 11 (requires transpilation).
-
-It can be transpiled to ES5 without the need for polyfills, since it does not rely on [`Symbol.iterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/iterator). For example, when transpiling with [Babel](https://babeljs.io/docs/en/caveats), you do not need to include the `Symbol` and `prototype[Symbol.iterator]` polyfills.
-
 ## License
 
 [MIT](./LICENSE)
 
-[iterable]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators#Iterables
 [`iterator`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators#Iterators
