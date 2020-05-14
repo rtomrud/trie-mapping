@@ -8,5 +8,5 @@ module.exports = {
   name: "trie create",
   fn() {
     return trieMapping(JSON.parse(trieJSON));
-  }
+  },
 };

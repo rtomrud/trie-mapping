@@ -7,5 +7,5 @@ module.exports = {
   name: "map create",
   fn() {
     return new Map(JSON.parse(mapJSON));
-  }
+  },
 };

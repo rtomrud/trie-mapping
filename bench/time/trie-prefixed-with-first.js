@@ -49,9 +49,7 @@ module.exports = {
       return [];
     }
 
-    const [k, v] = trieMapping(node)
-      .entries()
-      .next().value;
+    const [k, v] = trieMapping(node).entries().next().value;
     return [string + k, v];
-  }
+  },
 };

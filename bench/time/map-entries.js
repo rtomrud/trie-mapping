@@ -8,5 +8,5 @@ module.exports = {
   name: "map entries",
   fn() {
     return [...map.entries()].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
-  }
+  },
 };

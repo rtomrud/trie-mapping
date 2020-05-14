@@ -51,7 +51,7 @@ module.exports = {
 
     return Array.from(trieMapping(node).entries(), ([key, value]) => [
       string + key,
-      value
+      value,
     ]);
-  }
+  },
 };

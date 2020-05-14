@@ -9,5 +9,5 @@ module.exports = {
   name: "trie entries",
   fn() {
     return [...trie.entries()];
-  }
+  },
 };

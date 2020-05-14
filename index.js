@@ -29,7 +29,7 @@ const findKeyWithCommonPrefix = (object, string) => {
   return undefined;
 };
 
-const findFirstKey = object => {
+const findFirstKey = (object) => {
   let first;
   for (const key in object) {
     if (hasOwnProperty.call(object, key) && (!first || first > key)) {
@@ -55,7 +55,7 @@ const findNextKey = (object, currentKey) => {
   return next;
 };
 
-const findFirstBranch = root => {
+const findFirstBranch = (root) => {
   for (const key in root) {
     if (hasOwnProperty.call(root, key)) {
       return root;
@@ -155,9 +155,9 @@ const createIterator = (root, index) => {
             ? path.join("")
             : index === 1
             ? node[""]
-            : [path.join(""), node[""]]
+            : [path.join(""), node[""]],
       };
-    }
+    },
   };
   if (Symbol && Symbol.iterator) {
     iterator[Symbol.iterator] = () => iterator;
@@ -173,7 +173,7 @@ const createIterator = (root, index) => {
  * iterable whose elements are key-value pairs, or a root object. If `elements`
  * is a root object, it may be deeply mutated by the trie's methods.
  */
-export default function(elements = {}) {
+export default function (elements = {}) {
   if (typeof elements !== "object") {
     throw TypeError();
   }
@@ -213,7 +213,7 @@ export default function(elements = {}) {
       size = 0;
 
       // Delete the keys of the root because suspended iterators reference it
-      keys(root).forEach(key => delete root[key]);
+      keys(root).forEach((key) => delete root[key]);
     },
 
     /**
@@ -344,7 +344,8 @@ export default function(elements = {}) {
 
         node[keyToSplit.substring(0, pos)] = {
           [keyToSplit.substring(pos)]: node[keyToSplit],
-          [suffix.substring(pos)]: pos === suffix.length ? value : { "": value }
+          [suffix.substring(pos)]:
+            pos === suffix.length ? value : { "": value },
         };
         delete node[keyToSplit];
       } else {
@@ -360,7 +361,7 @@ export default function(elements = {}) {
      */
     values() {
       return createIterator(root, 1);
-    }
+    },
   };
   if (Symbol && Symbol.iterator) {
     /**
@@ -374,7 +375,7 @@ export default function(elements = {}) {
   if (Array.isArray(elements)) {
     // Initialize from array
     const { set } = trie;
-    Array.prototype.forEach.call(elements, entry => set(entry[0], entry[1]));
+    Array.prototype.forEach.call(elements, (entry) => set(entry[0], entry[1]));
   } else if (elements !== null && Symbol && Symbol.iterator in elements) {
     // Initialize from iterable
     const { set } = trie;
