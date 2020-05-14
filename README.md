@@ -1,6 +1,6 @@
 # trie-mapping
 
-[![npm version](https://img.shields.io/npm/v/trie-mapping.svg?style=flat-square)](https://www.npmjs.com/package/trie-mapping)
+[![npm version](https://badgen.net/npm/v/trie-mapping)](https://www.npmjs.com/package/trie-mapping)
 [![build status](https://github.com/rtomrud/trie-mapping/workflows/build/badge.svg)](https://github.com/rtomrud/trie-mapping/actions?query=branch%3Amaster+workflow%3Abuild)
 [![Code size](https://badgen.net/bundlephobia/minzip/trie-mapping)](https://bundlephobia.com/result?p=trie-mapping)
 
