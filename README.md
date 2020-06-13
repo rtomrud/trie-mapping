@@ -4,7 +4,7 @@
 [![npm version](https://badgen.net/npm/v/trie-mapping)](https://www.npmjs.com/package/trie-mapping)
 [![bundle size](https://badgen.net/bundlephobia/minzip/trie-mapping)](https://bundlephobia.com/result?p=trie-mapping)
 
-A [compact trie](https://en.wikipedia.org/wiki/Radix_tree) for mapping keys to values that allows efficient prefix-based retrievals
+A [compact trie](https://en.wikipedia.org/wiki/Radix_tree) for mapping keys to values
 
 ## Installing
 
@@ -14,10 +14,10 @@ npm install trie-mapping
 
 ## API
 
-The API mimics the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) (so it may be used as a drop in replacement), with the following differences:
+The API mimics the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map), with the following differences:
 
 - It exports a factory function ([`trieMapping()`](#triemappingelements)) which may be initialized from a trie's [`root`](#root) object
-- It exposes the trie's internal representation through the [`root`](#root) getter to enable advanced use cases
+- It exposes the whole trie structure through the [`root`](#root) getter, so that it can be traversed directly or serialized
 - The `key` argument of [`get()`](#getkey), [`delete()`](#deletekey), [`has()`](#haskey), and [`set()`](#setkey-value) must be a string
 - The iteration order of [`entries()`](#entries), [`forEach()`](#foreachcallbackfn-thisarg), [`keys()`](#keys), [`values()`](#values), and [`[@@iterator]()`](#iterator) is alphabetical
 
@@ -41,7 +41,7 @@ trieMapping([
   ["hi", 1]
 ]);
 
-// Initialize from a trie's root object, e.g., what the `root` getter returns
+// Initialize from a trie's root object
 trieMapping({
   h: {
     ey: { "": 0 },
@@ -80,18 +80,9 @@ trieMapping([
 // }
 ```
 
-It exposes the inner state of the trie for use cases such as:
-
-- Finding all entries prefixed with a given prefix ([see example](./bench/time/trie-prefixed-with.js))
-- Implementing fuzzy string searching, e.g., with [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance)
-- Serializing a trie as JSON more compactly and quickly than with [`entries()`](#entries)
-- Efficiently initializing a new trie by passing a trie node to the [`trieMapping()`](#triemappingelements) factory function
-
 ### `size`
 
 Returns the number of key-value pairs.
-
-_Note that if the trie was initialized from a [root](#root) object, getting the `size` for the first time requires traversing the trie to count the number of elements. Afterwards, the size is memoized, even if you [`delete()`](#deletekey) or [`set()`](#setkey-value) elements._
 
 ### `clear()`
 
