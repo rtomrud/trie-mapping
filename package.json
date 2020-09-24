@@ -32,7 +32,7 @@
     "bench": "npm run bench-payload -s && npm run bench-space -s && npm run bench-time -s",
     "bench-payload": "node bench/payload/map.js && node bench/payload/trie.js",
     "bench-space": "node --expose-gc bench/space/map.js && node --expose-gc bench/space/trie.js",
-    "bench-time": "node bench/time/bench.js",
+    "bench-time": "node bench/time/map.js && node bench/time/trie.js",
     "build": "rollup -i index.js -o dist/index.js -f cjs --exports auto",
     "lint": "eslint .",
     "prepare": "npm run build",
