@@ -743,7 +743,7 @@ test("trie-mapping set() with a key that does not exist", ({
   deepEqual,
   end,
 }) => {
-  deepEqual(trieMapping().set(1, 0).root, { "1": { "": 0 } });
+  deepEqual(trieMapping().set(1, 0).root, { 1: { "": 0 } });
   deepEqual(trieMapping().set("", undefined).root, { "": undefined });
   deepEqual(trieMapping().set("hi", 0).root, { hi: { "": 0 } });
   deepEqual(
@@ -771,7 +771,7 @@ test("trie-mapping set() with a key that does not exist", ({
 });
 
 test("trie-mapping set() with a key that exists", ({ deepEqual, end }) => {
-  deepEqual(trieMapping([["1", 0]]).set(1, 1).root, { "1": { "": 1 } });
+  deepEqual(trieMapping([["1", 0]]).set(1, 1).root, { 1: { "": 1 } });
   deepEqual(trieMapping([["", undefined]]).set("", null).root, { "": null });
   deepEqual(trieMapping([["hi", 0]]).set("hi", 1).root, { hi: { "": 1 } });
   deepEqual(
