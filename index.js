@@ -173,8 +173,8 @@ const createIterator = (root, index) => {
  * iterable whose elements are key-value pairs, or a root object. If `elements`
  * is a root object, it may be deeply mutated by the trie's methods.
  */
-export default function (elements = {}) {
-  if (typeof elements !== "object") {
+export default function (elements) {
+  if (typeof elements !== "object" && typeof elements !== "undefined") {
     throw TypeError();
   }
 
@@ -362,6 +362,7 @@ export default function (elements = {}) {
     values() {
       return createIterator(root, 1);
     },
+    isSizeMemoized,
   };
   if (Symbol && Symbol.iterator) {
     /**
@@ -371,12 +372,12 @@ export default function (elements = {}) {
     trie[Symbol.iterator] = () => createIterator(root);
   }
 
-  // Initialize from argument
+  // Initialize
   if (Array.isArray(elements)) {
     // Initialize from array
     const { set } = trie;
     Array.prototype.forEach.call(elements, (entry) => set(entry[0], entry[1]));
-  } else if (elements !== null && Symbol && Symbol.iterator in elements) {
+  } else if (elements != null && Symbol && Symbol.iterator in elements) {
     // Initialize from iterable
     const { set } = trie;
     const iterator = elements[Symbol.iterator]();
@@ -389,10 +390,12 @@ export default function (elements = {}) {
       set(value[0], value[1]);
       ({ done, value } = iterator.next());
     }
-  } else {
-    // Initialize from object or null
-    root = elements || {};
+  } else if (elements != null) {
+    // Initialize from object
+    root = elements;
     isSizeMemoized = false;
+  } else {
+    root = {};
   }
 
   return trie;
