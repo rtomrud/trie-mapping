@@ -51,34 +51,6 @@
     "rollup": "2.28.2",
     "tape": "5.0.1"
   },
-  "eslintConfig": {
-    "env": {
-      "browser": true,
-      "es6": true
-    },
-    "extends": [
-      "./node_modules/eslint-config-pretty-strict/index.js"
-    ],
-    "overrides": [
-      {
-        "files": [
-          "./bench/**/*.js"
-        ],
-        "env": {
-          "node": true
-        }
-      }
-    ],
-    "parserOptions": {
-      "ecmaVersion": 2018,
-      "sourceType": "module"
-    },
-    "root": true
-  },
-  "eslintIgnore": [
-    "coverage",
-    "dist"
-  ],
   "esm": {
     "sourceMap": true
   },
