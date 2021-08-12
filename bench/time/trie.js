@@ -1,10 +1,11 @@
-const { readFileSync } = require("fs");
-const { join } = require("path");
-const { Suite } = require("benchmark");
-const trieMapping = require("../../dist/index.js");
+import { readFileSync } from "fs";
+import benchmark from "benchmark";
+import trieMapping from "../../index.js";
 
-const trieJSON = readFileSync(join(__dirname, "../data/trie.json"));
-const trie = trieMapping(JSON.parse(trieJSON));
+const { Suite } = benchmark;
+
+const data = readFileSync(new URL("../data/trie.json", import.meta.url));
+const trie = trieMapping(JSON.parse(data));
 
 const collect = (node, prefix, results) => {
   for (const key in node) {

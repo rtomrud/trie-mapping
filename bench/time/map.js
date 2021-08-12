@@ -1,9 +1,10 @@
-const { readFileSync } = require("fs");
-const { join } = require("path");
-const { Suite } = require("benchmark");
+import { readFileSync } from "fs";
+import benchmark from "benchmark";
 
-const mapJSON = readFileSync(join(__dirname, "../data/map.json"));
-const map = new Map(JSON.parse(mapJSON));
+const { Suite } = benchmark;
+
+const data = readFileSync(new URL("../data/map.json", import.meta.url));
+const map = new Map(JSON.parse(data));
 
 const prefixedWith = (map, prefix) => {
   const { length } = prefix;

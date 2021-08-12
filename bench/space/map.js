@@ -1,12 +1,11 @@
-const { readFileSync } = require("fs");
-const { join } = require("path");
+import { readFileSync } from "fs";
 
-const mapJSON = readFileSync(join(__dirname, "../data/map.json"));
+const data = readFileSync(new URL("../data/map.json", import.meta.url));
 
 global.gc();
 const heapUsedBefore = process.memoryUsage().heapUsed;
 
-const map = new Map(JSON.parse(mapJSON));
+const map = new Map(JSON.parse(data));
 const heapUsedAfterInit = process.memoryUsage().heapUsed;
 
 global.gc();

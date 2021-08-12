@@ -1,12 +1,11 @@
-const { readFileSync } = require("fs");
-const { join } = require("path");
-const { gzipSync, brotliCompressSync } = require("zlib");
+import { readFileSync } from "fs";
+import { gzipSync, brotliCompressSync } from "zlib";
 
-const mapJSON = readFileSync(join(__dirname, "../data/map.json"));
-console.log("map payload", mapJSON.length);
+const data = readFileSync(new URL("../data/map.json", import.meta.url));
+console.log("map payload", data.length);
 
-const gzippedMapJSON = Buffer.from(gzipSync(mapJSON));
-console.log("map payload-gzip", gzippedMapJSON.length);
+const gzippedData = Buffer.from(gzipSync(data));
+console.log("map payload-gzip", gzippedData.length);
 
-const brotliedMapJSON = Buffer.from(brotliCompressSync(mapJSON));
-console.log("map payload-br", brotliedMapJSON.length);
+const brotliedData = Buffer.from(brotliCompressSync(data));
+console.log("map payload-br", brotliedData.length);

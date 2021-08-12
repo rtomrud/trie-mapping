@@ -1,13 +1,12 @@
-const { readFileSync } = require("fs");
-const { join } = require("path");
-const trieMapping = require("../../dist/index.js");
+import { readFileSync } from "fs";
+import trieMapping from "../../index.js";
 
-const trieJSON = readFileSync(join(__dirname, "../data/trie.json"));
+const data = readFileSync(new URL("../data/trie.json", import.meta.url));
 
 global.gc();
 const heapUsedBefore = process.memoryUsage().heapUsed;
 
-const trie = trieMapping(JSON.parse(trieJSON));
+const trie = trieMapping(JSON.parse(data));
 const heapUsedAfterInit = process.memoryUsage().heapUsed;
 
 global.gc();
