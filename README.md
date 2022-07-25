@@ -124,8 +124,4 @@ Returns a new [`Iterator`] object that contains the values for each element in a
 
 Returns a new [`Iterator`] object that contains an array of `[key, value]` for each element in alphabetical order.
 
-## License
-
-[MIT](./LICENSE)
-
 [`iterator`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators#Iterators
