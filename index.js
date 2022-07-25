@@ -362,7 +362,6 @@ export default function (elements) {
     values() {
       return createIterator(root, 1);
     },
-    isSizeMemoized,
   };
   if (Symbol && Symbol.iterator) {
     /**
