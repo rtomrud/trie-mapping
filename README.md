@@ -1,6 +1,6 @@
 # trie-mapping
 
-[![build status](https://github.com/rtomrud/trie-mapping/workflows/build/badge.svg)](https://github.com/rtomrud/trie-mapping/actions?query=branch%3Amaster+workflow%3Abuild)
+[![build status](https://github.com/rtomrud/trie-mapping/workflows/ci/badge.svg)](https://github.com/rtomrud/trie-mapping/actions?query=branch%3Amaster+workflow%3Aci)
 [![npm version](https://badgen.net/npm/v/trie-mapping)](https://www.npmjs.com/package/trie-mapping)
 [![bundle size](https://badgen.net/bundlephobia/minzip/trie-mapping)](https://bundlephobia.com/result?p=trie-mapping)
 
