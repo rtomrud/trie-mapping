@@ -14,20 +14,16 @@ npm install trie-mapping
 
 ## API
 
-The API mimics the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map), with the following differences:
+The API is map-like, that is, it mimics the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map), with the following differences:
 
-- It exports a factory function ([`trieMapping()`](#triemappingelements)) which may be initialized from a trie's [`root`](#root) object
-- It exposes the whole trie structure through the [`root`](#root) getter, so that it can be traversed directly or serialized
-- The `key` argument of [`get()`](#getkey), [`delete()`](#deletekey), [`has()`](#haskey), and [`set()`](#setkey-value) must be a string
-- The iteration order of [`entries()`](#entries), [`forEach()`](#foreachcallbackfn-thisarg), [`keys()`](#keys), [`values()`](#values), and [`[@@iterator]()`](#iterator) is alphabetical
+- It exports a factory function ([`trieMapping()`](#triemappingiterable)) instead of a constructor, which may be initialized from a trie node object
+- It exposes the root trie node through the [`root`](#root) getter, so that it can be traversed directly (for example, for prefix-based searches) or serialized
+- The keys of the trie must be strings
+- Iteration is done in alphabetical order instead of in insertion order
 
-_The [`size`](#size) getter and the [`clear()`](#clear) method are identical to those of the native [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)_.
+### `trieMapping(iterable)`
 
-### `trieMapping(elements)`
-
-Returns a trie object.
-
-It may be initialized from the given `elements`, which is an array or other iterable whose elements are key-value pairs, or a root object. If `elements` is a root object, it may be deeply mutated by the trie's methods.
+Creates a new `Trie` object.
 
 ```js
 import trieMapping from "trie-mapping";
@@ -41,7 +37,7 @@ trieMapping([
   ["hi", 1],
 ]);
 
-// Initialize from a trie's root object
+// Initialize from a trie node object
 trieMapping({
   h: {
     ey: { "": 0 },
@@ -52,7 +48,7 @@ trieMapping({
 
 ### `root`
 
-Returns the root node, whose `""` key is the label of its value, and the rest of its keys are the labels of its child nodes.
+The root `TrieNode` object of the `Trie` object.
 
 ```js
 import trieMapping from "trie-mapping";
@@ -82,46 +78,44 @@ trieMapping([
 
 ### `size`
 
-Returns the number of key-value pairs.
+Returns the number of key-value pairs in the `Trie` object.
 
 ### `clear()`
 
-Removes all key-value pairs.
+Removes all key-value pairs from the `Trie` object.
 
 ### `delete(key)`
 
-Returns `true` if an element with the given `key` existed and has been removed, or `false` if the element does not exist.
+Returns `true` if an element in the `Trie` object existed and has been removed, or `false` if the element does not exist. `trie.has(key)` will return `false` afterwards.
 
 ### `entries()`
 
-Returns a new [`Iterator`] object that contains an array of `[key, value]` for each element in alphabetical order.
+Returns a new Iterator object that contains a two-member array of `[key, value]` for each element in the `Trie` object in alphabetical order.
 
 ### `forEach(callbackfn, thisArg)`
 
-Calls the given `callbackfn` once for each key-value pair, in alphabetical order, passing to the `callbackfn` the value of the item, the key of the item, and the trie object being traversed. If `thisArg` is given, it will be used as the `this` value for each callback.
+Calls `callbackFn` once for each key-value pair present in the `Trie` object, in alphabetical order. If a `thisArg` parameter is provided to `forEach`, it will be used as the `this` value for each callback.
 
 ### `get(key)`
 
-Returns the value associated to the given `key`, or `undefined` if there is none.
+Returns the value associated to the passed key, or `undefined` if there is none.
 
 ### `has(key)`
 
-Returns `true` if a value has been associated to the given `key`, or `false` otherwise.
+Returns a boolean indicating whether a value has been associated with the passed key in the `Trie` object or not.
 
 ### `keys()`
 
-Returns a new [`Iterator`] object that contains the keys for each element in alphabetical order.
+Returns a new Iterator object that contains the keys for each element in the `Trie` object in alphabetical order.
 
 ### `set(key, value)`
 
-Returns the trie, associating the given `value` to the given `key`.
+Sets the value for the passed key in the `Trie` object. Returns the `Trie` object.
 
 ### `values()`
 
-Returns a new [`Iterator`] object that contains the values for each element in alphabetical order.
+Returns a new Iterator object that contains the values for each element in the `Trie` object in alphabetical order.
 
-### `[@@iterator]()`
+### `[Symbol.iterator]()`
 
-Returns a new [`Iterator`] object that contains an array of `[key, value]` for each element in alphabetical order.
-
-[`iterator`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators#Iterators
+Returns a new Iterator object that contains a two-member array of `[key, value]` for each element in the `Trie` object in alphabetical order.
