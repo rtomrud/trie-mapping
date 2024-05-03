@@ -1,9 +1,5 @@
 # trie-mapping
 
-[![build status](https://github.com/rtomrud/trie-mapping/workflows/ci/badge.svg)](https://github.com/rtomrud/trie-mapping/actions?query=branch%3Amaster+workflow%3Aci)
-[![npm version](https://badgen.net/npm/v/trie-mapping)](https://www.npmjs.com/package/trie-mapping)
-[![bundle size](https://badgen.net/bundlephobia/minzip/trie-mapping)](https://bundlephobia.com/result?p=trie-mapping)
-
 A [compact trie](https://en.wikipedia.org/wiki/Radix_tree) for mapping keys to values
 
 ## Installing
