@@ -38,15 +38,15 @@ trieMapping();
 // Initialize from an array
 trieMapping([
   ["hey", 0],
-  ["hi", 1]
+  ["hi", 1],
 ]);
 
 // Initialize from a trie's root object
 trieMapping({
   h: {
     ey: { "": 0 },
-    i: { "": 1 }
-  }
+    i: { "": 1 },
+  },
 });
 ```
 
@@ -63,7 +63,7 @@ trieMapping([
   ["hells", 4],
   ["hello", 3],
   ["hell", 2],
-  ["bye", 0]
+  ["bye", 0],
 ]).root;
 // =>
 // {
