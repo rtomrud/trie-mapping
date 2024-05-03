@@ -159,9 +159,7 @@ const createIterator = (root, index) => {
       };
     },
   };
-  if (Symbol && Symbol.iterator) {
-    iterator[Symbol.iterator] = () => iterator;
-  }
+  iterator[Symbol.iterator] = () => iterator;
 
   return iterator;
 };
@@ -313,15 +311,13 @@ export default function (iterable) {
       return createIterator(root, 1);
     },
   };
-  if (Symbol && Symbol.iterator) {
-    trie[Symbol.iterator] = () => createIterator(root);
-  }
+  trie[Symbol.iterator] = () => createIterator(root);
 
   if (Array.isArray(iterable)) {
     // Initialize from array-like
     const { set } = trie;
     Array.prototype.forEach.call(iterable, (entry) => set(entry[0], entry[1]));
-  } else if (iterable != null && Symbol && Symbol.iterator in iterable) {
+  } else if (iterable != null && Symbol.iterator in iterable) {
     // Initialize from iterable iterator
     const { set } = trie;
     const iterator = iterable[Symbol.iterator]();
