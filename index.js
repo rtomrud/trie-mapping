@@ -154,8 +154,8 @@ const createIterator = (root, index) => {
           index === 0
             ? path.join("")
             : index === 1
-            ? node[""]
-            : [path.join(""), node[""]],
+              ? node[""]
+              : [path.join(""), node[""]],
       };
     },
   };
@@ -166,15 +166,8 @@ const createIterator = (root, index) => {
   return iterator;
 };
 
-/**
- * Returns a trie object.
- *
- * It may be initialized from the given `elements`, which is an array or other
- * iterable whose elements are key-value pairs, or a root object. If `elements`
- * is a root object, it may be deeply mutated by the trie's methods.
- */
-export default function (elements) {
-  if (typeof elements !== "object" && typeof elements !== "undefined") {
+export default function (iterable) {
+  if (typeof iterable !== "object" && typeof iterable !== "undefined") {
     throw TypeError();
   }
 
@@ -182,17 +175,10 @@ export default function (elements) {
   let size = 0;
   let isSizeMemoized = true;
   const trie = {
-    /**
-     * Returns the root node, whose `""` key is the label of its value, and the
-     * rest of its keys are the labels of its child nodes.
-     */
     get root() {
       return root;
     },
 
-    /**
-     * Returns the number of key-value pairs.
-     */
     get size() {
       if (!isSizeMemoized) {
         const { next } = createIterator(root, 1);
@@ -206,9 +192,6 @@ export default function (elements) {
       return size;
     },
 
-    /**
-     * Removes all key-value pairs.
-     */
     clear() {
       size = 0;
 
@@ -216,10 +199,6 @@ export default function (elements) {
       keys(root).forEach((key) => delete root[key]);
     },
 
-    /**
-     * Returns `true` if an element with the given `key` existed and has been
-     * removed, or `false` if the element does not exist.
-     */
     delete(key) {
       let grandparent;
       let parentKey;
@@ -265,20 +244,10 @@ export default function (elements) {
       return true;
     },
 
-    /**
-     * Returns a new `Iterator` object that contains an array of `[key, value]`
-     * for each element in alphabetical order.
-     */
     entries() {
       return createIterator(root);
     },
 
-    /**
-     * Calls the given `callbackfn` once for each key-value pair, in
-     * alphabetical order, passing to the `callbackfn` the value of the item,
-     * the key of the item, and the trie object being traversed. If `thisArg`
-     * is given, it will be used as the `this` value for each callback.
-     */
     forEach(callbackfn, thisArg) {
       const boundCallbackfn = callbackfn.bind(thisArg);
       const { next } = createIterator(root);
@@ -289,35 +258,20 @@ export default function (elements) {
       }
     },
 
-    /**
-     * Returns the value associated to the given `key`, or `undefined` if there
-     * is none.
-     */
     get(key) {
       const node = findLastBranch(root, String(key));
       return node ? node[""] : undefined;
     },
 
-    /**
-     * Returns `true` if a value has been associated to the given `key`, or
-     * `false` otherwise.
-     */
     has(key) {
       const node = findLastBranch(root, String(key));
       return node ? hasOwnProperty.call(node, "") : false;
     },
 
-    /**
-     * Returns a new `Iterator` object that contains the keys for each element
-     * in alphabetical order.
-     */
     keys() {
       return createIterator(root, 0);
     },
 
-    /**
-     * Returns the trie, associating the given `value` to the given `key`.
-     */
     set(key, value) {
       let node = root;
       let suffix = String(key);
@@ -355,31 +309,22 @@ export default function (elements) {
       return trie;
     },
 
-    /**
-     * Returns a new `Iterator` object that contains the values for each
-     * element in alphabetical order.
-     */
     values() {
       return createIterator(root, 1);
     },
   };
   if (Symbol && Symbol.iterator) {
-    /**
-     * Returns a new `Iterator` object that contains an array of `[key, value]`
-     * for each element in alphabetical order.
-     */
     trie[Symbol.iterator] = () => createIterator(root);
   }
 
-  // Initialize
-  if (Array.isArray(elements)) {
-    // Initialize from array
+  if (Array.isArray(iterable)) {
+    // Initialize from array-like
     const { set } = trie;
-    Array.prototype.forEach.call(elements, (entry) => set(entry[0], entry[1]));
-  } else if (elements != null && Symbol && Symbol.iterator in elements) {
-    // Initialize from iterable
+    Array.prototype.forEach.call(iterable, (entry) => set(entry[0], entry[1]));
+  } else if (iterable != null && Symbol && Symbol.iterator in iterable) {
+    // Initialize from iterable iterator
     const { set } = trie;
-    const iterator = elements[Symbol.iterator]();
+    const iterator = iterable[Symbol.iterator]();
     let { done, value } = iterator.next();
     while (!done) {
       if (typeof value !== "object") {
@@ -389,9 +334,9 @@ export default function (elements) {
       set(value[0], value[1]);
       ({ done, value } = iterator.next());
     }
-  } else if (elements != null) {
-    // Initialize from object
-    root = elements;
+  } else if (iterable != null) {
+    // Initialize from trie node object
+    root = iterable;
     isSizeMemoized = false;
   } else {
     root = {};
